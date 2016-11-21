@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component-configuration
+        xmlns="http://tis.co.jp/nablarch/component-configuration"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://tis.co.jp/nablarch/component-configuration  ../component-configuration.xsd">
+
+    <!-- フレームワーク制御ヘッダ定義 -->
+    <component
+        name = "fwHeaderDefinition"
+        class = "nablarch.fw.messaging.reader.StructuredFwHeaderDefinition">
+        <property name = "ResendFlagOffValue" value = "0" />
+        <property name = "fwHeaderKeys">
+            <map>
+                <entry key="userId"     value="_nbctlhdr.userId"/>
+                <entry key="resendFlag" value="_nbctlhdr.resendFlag"/>
+                <entry key="statusCode" value="_nbctlhdr.statusCode"/>
+            </map>
+        </property>
+    </component>
+
+    <!-- ファイルパス定義 -->
+    <component name="filePathSetting"
+               class="nablarch.core.util.FilePathSetting" autowireType="None">
+        <property name="basePathSettings">
+            <map>
+                <entry key="format" value="file:temp" />
+            </map>
+        </property>
+        <property name="fileExtensions">
+            <map>
+                <entry key="format" value="fmt" />
+            </map>
+        </property>
+    </component>
+
+    <component name="formatterFactory"
+               class="nablarch.fw.messaging.handler.HttpMessagingResponseBuildingHandlerTest$TestFormatterFactory" />
+
+</component-configuration>
