@@ -31,13 +31,10 @@ dependencies {
   testCompile 'junit:junit:4.12'
   testCompile 'org.jmockit:jmockit:1.13'
   testCompile "com.nablarch.dev:nablarch-test-support:0.0.5"
-  testCompile "com.nablarch.dev:nablarch-test-support-hereis:1.0.0"
   // testFW
-  testCompile(group: 'com.nablarch.framework', name: 'nablarch-testing', version: '1.0.7') {
+  testCompile ("com.nablarch.framework:nablarch-testing:${nablarchTestingVersion}"){
     exclude group: 'com.nablarch.framework', module: 'nablarch-all'
   }
-
-  testRuntime files('src/test/java/')
 
   provided 'javax.servlet:servlet-api:2.5'
 

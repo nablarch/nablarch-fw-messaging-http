@@ -1,0 +1,5 @@
+file-type:        "JSON"
+text-encoding:    "UTF-8"
+[response]
+1 messageCode X9
+2 message N

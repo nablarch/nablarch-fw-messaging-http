@@ -13,11 +13,9 @@ import nablarch.fw.messaging.realtime.http.exception.HttpMessagingInvalidDataFor
 import nablarch.fw.messaging.realtime.http.streamio.HttpInputStreamReader;
 import nablarch.fw.messaging.realtime.http.streamio.HttpOutputStreamWriter;
 import nablarch.test.core.log.LogVerifier;
-import nablarch.test.support.tool.Hereis;
 import org.junit.After;
 import org.junit.Test;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -28,7 +26,7 @@ import static org.junit.Assert.fail;
 
 
 /**
- * {@link ProtocolLientTestHttpMessagingClient}のテスト。<br>
+ * {@link HttpMessagingClient}のテスト。<br>
  * ただし、コネクションは張らない(スタブを用いる)。
  * 
  * @author Masaya Seko
@@ -76,9 +74,6 @@ public class HttpMessagingClientTest {
     @Test
     public void testGetMessage() {
         initRepository("");
-
-        //ユニットテスト用フォーマット定義ファイル準備
-        prepareFormatFileGetMessage();
 
         SyncMessage requestMessage = null;
         SyncMessage reciveMessage = null;
@@ -151,9 +146,6 @@ public class HttpMessagingClientTest {
     public void testGet404() {
         initRepository("");
 
-        //ユニットテスト用フォーマット定義ファイル準備
-        prepareFormatFileGetMessage();
-
         SyncMessage requestMessage = null;
         MessageSenderSettings settings = null;
         StubHTTPMessagingClient client= null;
@@ -209,23 +201,9 @@ public class HttpMessagingClientTest {
             assertThat(formatException.getTargetUrl(), is("http://localhost:8090/rm21ab0100"));
             assertThat(formatException.getStatusCode(), is(404));
             assertThat(formatException.getReceiveData(), is("404 File not found"));
-            
+
             LogVerifier.verify("messaging log assertion failed.");
         }
-    }
-
-    private void prepareFormatFileGetMessage(){
-        File formatFile = null;
-        // フォーマットファイル生成(リアルタイム通信 受信用)
-        formatFile = Hereis.file(getFormatFileName("RM21AB0100_RECEIVE"));
-        /*******
-        file-type:        "JSON"
-        text-encoding:    "UTF-8"
-        [response]
-        1 messageCode X9
-        2 message N
-        *******/
-        formatFile.deleteOnExit();
     }
 
     /***
@@ -234,9 +212,6 @@ public class HttpMessagingClientTest {
     @Test
     public void testPostMessage() {
         initRepository("");
-        
-        //ユニットテスト用フォーマット定義ファイル準備
-        prepareFormatFilePostMessage();
 
         SyncMessage requestMessage = null;
         SyncMessage reciveMessage = null;
@@ -423,69 +398,16 @@ public class HttpMessagingClientTest {
         dataRecord = reciveMessage.getDataRecord();
         assertThat((String)(dataRecord.get("messageCode")), is("100"));
         assertThat((String)(dataRecord.get("message")), is("OK"));
-        
+
         LogVerifier.verify("messaging log assertion failed.");
     }
 
-    private void prepareFormatFilePostMessage(){
-        File formatFile = null;
-
-        // フォーマットファイル生成(リアルタイム通信　送信用)
-        formatFile = Hereis.file(getFormatFileName("RM21AB0201_SEND"));
-        /*******
-        file-type:        "JSON"
-        text-encoding:    "UTF-8"
-        [request]
-        1 requestId X
-        2 firstName N
-        3 lastName N
-        *******/
-        formatFile.deleteOnExit();
-        
-        // フォーマットファイル生成(リアルタイム通信 受信用)
-        formatFile = Hereis.file(getFormatFileName("RM21AB0201_RECEIVE"));
-        /*******
-        file-type:        "JSON"
-        text-encoding:    "UTF-8"
-        [response]
-        1 messageCode X9
-        2 message N
-        *******/
-        formatFile.deleteOnExit();
-
-
-        // フォーマットファイル生成(リアルタイム通信　送信用)
-        formatFile = Hereis.file(getFormatFileName("RM21AB0202_SEND"));
-        /*******
-        file-type:        "JSON"
-        text-encoding:    "UTF-8"
-        [request]
-        1 requestId X
-        2 firstName N
-        3 lastName N
-        *******/
-        formatFile.deleteOnExit();
-        
-        // フォーマットファイル生成(リアルタイム通信 受信用)
-        formatFile = Hereis.file(getFormatFileName("RM21AB0202_RECEIVE"));
-        /*******
-        file-type:        "JSON"
-        text-encoding:    "UTF-8"
-        [response]
-        1 messageCode X9
-        2 message N
-        *******/
-        formatFile.deleteOnExit();
-    }
-    
     /***
      * PUTメソッドで通信を行えること。
      */
     @Test
     public void tesPutMessageBody() {
         initRepository("");
-        //ユニットテスト用フォーマット定義ファイル準備
-        prepareFormatFilePutMessage();
 
         SyncMessage requestMessage = null;
         MessageSenderSettings settings = null;
@@ -596,46 +518,8 @@ public class HttpMessagingClientTest {
         dataRecord = reciveMessage.getDataRecord();
         assertThat((String)(dataRecord.get("messageCode")), is("100"));
         assertThat((String)(dataRecord.get("message")), is("OK"));
-        
+
         LogVerifier.verify("messaging log assertion failed.");
-    }
-
-    private void prepareFormatFilePutMessage(){
-        File formatFile = null;
-        // フォーマットファイル生成(リアルタイム通信　送信用)
-        formatFile = Hereis.file(getFormatFileName("RM21AB0300_SEND"));
-        /*******
-        file-type:        "JSON"
-        text-encoding:    "UTF-8"
-        [request]
-        1 requestId X
-        2 firstName N
-        3 lastName N
-        *******/
-        formatFile.deleteOnExit();
-
-        // フォーマットファイル生成(リアルタイム通信　送信用)
-        formatFile = Hereis.file(getFormatFileName("RM21AB0301_SEND"));
-        /*******
-        file-type:        "JSON"
-        text-encoding:    "UTF-8"
-        [request]
-        1 requestId X
-        2 firstName N
-        3 lastName N
-        *******/
-        formatFile.deleteOnExit();
-        
-        // フォーマットファイル生成(リアルタイム通信 受信用)
-        formatFile = Hereis.file(getFormatFileName("RM21AB0301_RECEIVE"));
-        /*******
-        file-type:        "JSON"
-        text-encoding:    "UTF-8"
-        [response]
-        1 messageCode X9
-        2 message N
-        *******/
-        formatFile.deleteOnExit();
     }
 
     /***
@@ -644,7 +528,6 @@ public class HttpMessagingClientTest {
     @Test
     public void tesDeleteMessage() {
         initRepository("");
-        prepareFormatFileDeleteMessage();
 
         SyncMessage requestMessage = null;
         MessageSenderSettings settings = null;
@@ -744,22 +627,8 @@ public class HttpMessagingClientTest {
         dataRecord = reciveMessage.getDataRecord();
         assertThat((String)(dataRecord.get("messageCode")), is("100"));
         assertThat((String)(dataRecord.get("message")), is("OK"));
-        
-        LogVerifier.verify("messaging log assertion failed.");
-    }
 
-    private void prepareFormatFileDeleteMessage(){
-        File formatFile = null;
-        // フォーマットファイル生成(リアルタイム通信 受信用)
-        formatFile = Hereis.file(getFormatFileName("RM21AB0401_RECEIVE"));
-        /*******
-        file-type:        "JSON"
-        text-encoding:    "UTF-8"
-        [response]
-        1 messageCode X9
-        2 message N
-        *******/
-        formatFile.deleteOnExit();
+        LogVerifier.verify("messaging log assertion failed.");
     }
 
     /***
@@ -768,7 +637,6 @@ public class HttpMessagingClientTest {
     @Test
     public void testInvalidRequestBody() {
         initRepository("_invalid1");
-        prepareInvalidRequestBodyFormatfile();
 
         SyncMessage requestMessage = null;
         MessageSenderSettings settings = null;
@@ -813,41 +681,12 @@ public class HttpMessagingClientTest {
         }
     }
 
-    private void prepareInvalidRequestBodyFormatfile(){
-        File formatFile = null;
-        // フォーマットファイル生成(リアルタイム通信　送信用)
-        formatFile = Hereis.file(getFormatFileName("RM21AC0100_SEND"));
-        /*******
-        file-type:        "JSON"
-        text-encoding:    "UTF-8"
-        [request]
-        1 requestId X
-        2 firstName N
-        3 lastName N
-        *******/
-        formatFile.deleteOnExit();
-
-        
-        // フォーマットファイル生成(リアルタイム通信 受信用)
-        formatFile = Hereis.file(getFormatFileName("RM21AC0100_RECEIVE"));
-        /*******
-        file-type:        "JSON"
-        text-encoding:    "UTF-8"
-        [response]
-        1 messageCode X9
-        2 message N
-        *******/
-        formatFile.deleteOnExit();
-    }
-
-    
     /***
      * 不正なデータ(応答電文に必須項目がない場合)を受信した場合。
      */
     @Test
     public void testInvalidResponseBody() {
         initRepository("_invalid1");
-        prepareInvalidResponseBodyFormatfile();
 
         SyncMessage requestMessage = null;
         MessageSenderSettings settings = null;
@@ -898,34 +737,9 @@ public class HttpMessagingClientTest {
             assertThat(e.getMessage(), is("Invalid receive message format. requestId=[RM21AC0200]. URL=[http://localhost:8090/rm21ac0200]. status code=[200]."));
             //MessagingExceptionでもキャッチ可能なことを確認
             assertThat(e, is(instanceOf(MessagingException.class)));
-            
+
             LogVerifier.verify("messaging log assertion failed.");
         }
-    }
-
-    private void prepareInvalidResponseBodyFormatfile(){
-        File formatFile = null;
-        // フォーマットファイル生成(リアルタイム通信　送信用)
-        formatFile = Hereis.file(getFormatFileName("RM21AC0200_SEND"));
-        /*******
-        file-type:        "JSON"
-        text-encoding:    "UTF-8"
-        [header]
-        1 userId X
-        *******/
-        formatFile.deleteOnExit();
-
-        
-        // フォーマットファイル生成(リアルタイム通信 受信用)
-        formatFile = Hereis.file(getFormatFileName("RM21AC0200_RECEIVE"));
-        /*******
-        file-type:        "JSON"
-        text-encoding:    "UTF-8"
-        [response]
-        1 messageCode X9
-        2 message N
-        *******/
-        formatFile.deleteOnExit();
     }
 
     /***
@@ -958,9 +772,6 @@ public class HttpMessagingClientTest {
     @Test
     public void testMessageId() {
         initRepository("");
-
-        //ユニットテスト用フォーマット定義ファイル準備
-        prepareFormatFileMessageId();
 
         SyncMessage requestMessage = null;
         SyncMessage reciveMessage = null;
@@ -1017,7 +828,6 @@ public class HttpMessagingClientTest {
     @Test
     public void testHeader_bigDecimal() {
         initRepository("");
-        prepareFormatFileMessageId();
 
         SyncMessage requestMessage = new SyncMessage("RM21AB0600");
         requestMessage.getHeaderRecord().put("decimal", new BigDecimal("0.0000000001"));
@@ -1034,30 +844,12 @@ public class HttpMessagingClientTest {
         assertThat(receiveMessage.getHeaderRecord().get(HttpMessagingClient.SYNCMESSAGE_STATUS_CODE).toString(), is("200"));
     }
 
-    private void prepareFormatFileMessageId(){
-        File formatFile = null;
-        // フォーマットファイル生成(リアルタイム通信 受信用)
-        formatFile = Hereis.file(getFormatFileName("RM21AB0600_RECEIVE"));
-        /*******
-        file-type:        "JSON"
-        text-encoding:    "UTF-8"
-        [response]
-        1 messageCode X9
-        2 message N
-        *******/
-        formatFile.deleteOnExit();
-    }
-
-
     /***
      * 呼び出し側から「フレームワーク制御ヘッダー」のテスト。
      */
     @Test
     public void testFwHeader() {
         initRepository("");
-        
-        //ユニットテスト用フォーマット定義ファイル準備
-        prepareFormatFileFwHeader();
 
         SyncMessage requestMessage = null;
         MessageSenderSettings settings = null;
@@ -1195,35 +987,6 @@ public class HttpMessagingClientTest {
         }
     }
 
-
-    private void prepareFormatFileFwHeader(){
-        File formatFile = null;
-
-        // フォーマットファイル生成(リアルタイム通信　送信用)
-        formatFile = Hereis.file(getFormatFileName("RM21AB0700_SEND"));
-        /*******
-        file-type:        "JSON"
-        text-encoding:    "UTF-8"
-        [request]
-        1 userId X
-        2 requestId X
-        3 firstName N
-        4 lastName N
-        *******/
-        formatFile.deleteOnExit();
-        
-        // フォーマットファイル生成(リアルタイム通信 受信用)
-        formatFile = Hereis.file(getFormatFileName("RM21AB0700_RECEIVE"));
-        /*******
-        file-type:        "JSON"
-        text-encoding:    "UTF-8"
-        [response]
-        1 messageCode X9
-        2 message N
-        *******/
-        formatFile.deleteOnExit();
-    }
-    
     /***
      * ログアサート用のリストを作成します。
      * 出力されるログはデフォルトのフォーマッタで整形されていることを前提としています。

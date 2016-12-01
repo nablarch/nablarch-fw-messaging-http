@@ -23,13 +23,12 @@ import nablarch.fw.web.HttpResponse;
 import nablarch.fw.web.servlet.ServletExecutionContext;
 
 import nablarch.test.core.log.LogVerifier;
+import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.log.app.OnMemoryLogWriter;
-import nablarch.test.support.tool.Hereis;
 import nablarch.test.support.web.servlet.MockServletContext;
 import nablarch.test.support.web.servlet.MockServletRequest;
 import nablarch.test.support.web.servlet.MockServletResponse;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -55,17 +54,8 @@ public class HttpMessagingResponseBuildingHandlerTest {
     @Rule
     public TestName testNameRule = new TestName();
 
-    /**
-     * @throws Exception
-     */
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        // テスト用のリポジトリ構築
-        ComponentDefinitionLoader loader = new XmlComponentDefinitionLoader(
-                "nablarch/fw/messaging/handler/HttpMessagingDataParseHandlerTest.xml");
-        DiContainer container = new DiContainer(loader);
-        SystemRepository.load(container);
-    }
+    @Rule
+    public SystemRepositoryResource repositoryResource = new SystemRepositoryResource("nablarch/fw/messaging/handler/HttpMessagingDataParseHandlerTest.xml");
 
     /**
      * @throws Exception
@@ -230,67 +220,36 @@ public class HttpMessagingResponseBuildingHandlerTest {
         String requestId = ThreadContext.getRequestId();
 
         // 要求電文
-        String requestTelegram = Hereis.string();
-        /****************************
-        <?xml version="1.0" encoding="UTF-8"?>
-        <request>
-          <_nbctlhdr>
-            <userId>unitTest</userId>
-            <resendFlag>0</resendFlag>
-          </_nbctlhdr>
-          <user>
-            <id>nablarch</id>
-            <name>ナブラーク</name>
-            <cno>1234567890123456</cno>
-          </user>
-        </request>
-        ****************************/
+        String requestTelegram =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "  <request>\n" +
+                "    <_nbctlhdr>\n" +
+                "      <userId>unitTest</userId>\n" +
+                "      <resendFlag>0</resendFlag>\n" +
+                "    </_nbctlhdr>\n" +
+                "    <user>\n" +
+                "      <id>nablarch</id>\n" +
+                "      <name>ナブラーク</name>\n" +
+                "      <cno>1234567890123456</cno>\n" +
+                "    </user>\n" +
+                "</request>";
 
         // 要求電文フォーマット
-        File requestFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
-        /****************************
-        file-type:      "XML"
-        text-encoding:  "UTF-8"
-        [request]
-        1 _nbctlhdr     OB
-        2 user          OB
-        [_nbctlhdr]
-        1 userId        X
-        2 resendFlag    X
-        [user]
-        1 id            X
-        2 name          X
-        ****************************/
-        requestFormatFile.deleteOnExit();
+        File requestFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
 
         // 想定される応答電文
-        String responseTelegram = Hereis.string();
-        /****************************
-        <?xml version="1.0" encoding="UTF-8"?>
-        <response>
-          <_nbctlhdr>
-            <statusCode>200</statusCode>
-          </_nbctlhdr>
-          <result>
-            <msg>succes\ns</msg>
-          </result>
-        </response>
-         ****************************/
+        String responseTelegram =
+                "<response>\n" +
+                "  <_nbctlhdr>\n" +
+                "    <statusCode>200</statusCode>\n" +
+                "  </_nbctlhdr>\n" +
+                "  <result>\n" +
+                "    <msg>succes\\ns</msg>\n" +
+                "  </result>\n" +
+                "</response>";
 
         // 応答電文フォーマット
-        File responseFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_SEND")));
-        /****************************
-        file-type:      "XML"
-        text-encoding:  "UTF-8"
-        [response]
-        1 _nbctlhdr     OB
-        2 result        OB
-        [_nbctlhdr]
-        1 statusCode    X
-        [result]
-        1 msg           X
-         ****************************/
-        responseFormatFile.deleteOnExit();
+        File responseFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_SEND")));
 
         // 要求データ
         byte[] requestData = requestTelegram.getBytes("UTF-8");
@@ -334,64 +293,34 @@ public class HttpMessagingResponseBuildingHandlerTest {
         String requestId = ThreadContext.getRequestId();
 
         // 要求電文
-        String requestTelegram = Hereis.string();
-        /****************************
-        {
-          "_nbctlhdr":{
-            "userId":"unitTest",
-            "resendFlag":"0"
-          }
-          "user":{
-            "id":"nablarch",
-            "name":"ナブラーク"
-          }
-        }
-        ****************************/
+        String requestTelegram =
+                "{\n" +
+                "  \"_nbctlhdr\":{\n" +
+                "    \"userId\":\"unitTest\",\n" +
+                "    \"resendFlag\":\"0\"\n" +
+                "  }\n" +
+                "  \"user\":{\n" +
+                "    \"id\":\"nablarch\",\n" +
+                "    \"name\":\"ナブラーク\"\n" +
+                "  }\n" +
+                "}";
 
         // 要求電文フォーマット
-        File requestFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
-        /****************************
-        file-type:      "JSON"
-        text-encoding:  "UTF-8"
-        [request]
-        1 _nbctlhdr     OB
-        2 user          OB
-        [_nbctlhdr]
-        1 userId        X
-        2 resendFlag    X
-        [user]
-        1 id            X
-        2 name          X
-        ****************************/
-        requestFormatFile.deleteOnExit();
+        File requestFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
 
         // 想定される応答電文
-        String responseTelegram = Hereis.string();
-        /****************************
-        {
-          "_nbctlhdr":{
-            "statusCode":"200"
-          }
-          "result":{
-            "msg":" success \n"
-          }
-        }
-        ****************************/
+        String responseTelegram =
+                "{\n" +
+                "  \"_nbctlhdr\":{\n" +
+                "    \"statusCode\":\"200\"\n" +
+                "  }\n" +
+                "  \"result\":{\n" +
+                "    \"msg\":\" success \\n\"\n" +
+                "  }\n" +
+                "}";
 
         // 応答電文フォーマット
-        File responseFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_SEND")));
-        /****************************
-        file-type:      "JSON"
-        text-encoding:  "UTF-8"
-        [response]
-        1 _nbctlhdr     OB
-        2 result        OB
-        [_nbctlhdr]
-        1 statusCode    X
-        [result]
-        1 msg           X
-        ****************************/
-        responseFormatFile.deleteOnExit();
+        File responseFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_SEND")));
 
         // 要求データ
         byte[] requestData = requestTelegram.getBytes("UTF-8");
@@ -440,52 +369,29 @@ public class HttpMessagingResponseBuildingHandlerTest {
         String requestId = ThreadContext.getRequestId();
 
         // 要求電文
-        String requestTelegram = Hereis.string();
-        /****************************
-        <?xml version="1.0" encoding="UTF-8"?>
-        <request>
-          <user>
-            <id>nablarch</id>
-            <name>ナブラーク</name>
-          </user>
-        </request>
-        ****************************/
+        String requestTelegram =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<request>\n" +
+                "  <user>\n" +
+                "    <id>nablarch</id>\n" +
+                "    <name>ナブラーク</name>\n" +
+                "  </user>\n" +
+                "</request>";
 
         // 要求電文フォーマット
-        File requestFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
-        /****************************
-        file-type:      "XML"
-        text-encoding:  "UTF-8"
-        [request]
-        1 user          OB
-        [user]
-        1 id            X
-        2 name          X
-        ****************************/
-        requestFormatFile.deleteOnExit();
+        File requestFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
 
         // 想定される応答電文
-        String responseTelegram = Hereis.string();
-        /****************************
-        <?xml version="1.0" encoding="UTF-8"?>
-        <response>
-          <result>
-            <msg>success</msg>
-          </result>
-        </response>
-         ****************************/
+        String responseTelegram =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<response>\n" +
+                "  <result>\n" +
+                "    <msg>success</msg>\n" +
+                "  </result>\n" +
+                "</response>";
 
         // 応答電文フォーマット
-        File responseFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_SEND")));
-        /****************************
-        file-type:      "XML"
-        text-encoding:  "UTF-8"
-        [response]
-        1 result        OB
-        [result]
-        1 msg           X
-         ****************************/
-        responseFormatFile.deleteOnExit();
+        File responseFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_SEND")));
 
         // 要求データ
         byte[] requestData = requestTelegram.getBytes("UTF-8");
@@ -535,66 +441,36 @@ public class HttpMessagingResponseBuildingHandlerTest {
         String requestId = ThreadContext.getRequestId();
 
         // 要求電文
-        String requestTelegram = Hereis.string();
-        /****************************
-        <?xml version="1.0" encoding="UTF-8"?>
-        <request>
-          <_nbctlhdr>
-            <userId>unitTest</userId>
-            <resendFlag>0</resendFlag>
-          </_nbctlhdr>
-          <user>
-            <id>nablarch</id>
-            <name>ナブラーク</name>
-          </user>
-        </request>
-        ****************************/
+        String requestTelegram =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<request>\n" +
+                "  <_nbctlhdr>\n" +
+                "    <userId>unitTest</userId>\n" +
+                "    <resendFlag>0</resendFlag>\n" +
+                "  </_nbctlhdr>\n" +
+                "  <user>\n" +
+                "    <id>nablarch</id>\n" +
+                "    <name>ナブラーク</name>\n" +
+                "  </user>\n" +
+                "</request>";
 
         // 要求電文フォーマット
-        File requestFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
-        /****************************
-        file-type:      "XML"
-        text-encoding:  "UTF-8"
-        [request]
-        1 _nbctlhdr     OB
-        2 user          OB
-        [_nbctlhdr]
-        1 userId        X
-        2 resendFlag    X
-        [user]
-        1 id            X
-        2 name          X
-        ****************************/
-        requestFormatFile.deleteOnExit();
+        File requestFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
 
         // 想定される応答電文
-        String responseTelegram = Hereis.string();
-        /****************************
-        <?xml version="1.0" encoding="UTF-8"?>
-        <response>
-          <_nbctlhdr>
-            <statusCode>200</statusCode>
-          </_nbctlhdr>
-          <result>
-            <msg>success</msg>
-          </result>
-        </response>
-         ****************************/
+        String responseTelegram =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<response>\n" +
+                "  <_nbctlhdr>\n" +
+                "    <statusCode>200</statusCode>\n" +
+                "  </_nbctlhdr>\n" +
+                "  <result>\n" +
+                "    <msg>success</msg>\n" +
+                "  </result>\n" +
+                "</response>";
 
         // 応答電文フォーマット
-        File responseFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_SEND")));
-        /****************************
-        file-type:      "XML"
-        text-encoding:  "UTF-8"
-        [response]
-        1 _nbctlhdr     OB
-        2 result        OB
-        [_nbctlhdr]
-        1 statusCode    X
-        [result]
-        1 msg           X
-         ****************************/
-        responseFormatFile.deleteOnExit();
+        File responseFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_SEND")));
 
         // 要求データ
         byte[] requestData = requestTelegram.getBytes("UTF-8");
@@ -637,60 +513,33 @@ public class HttpMessagingResponseBuildingHandlerTest {
         String requestId = ThreadContext.getRequestId();
 
         // 要求電文
-        String requestTelegram = Hereis.string();
-        /****************************
-        <?xml version="1.0" encoding="UTF-8"?>
-        <request>
-          <_nbctlhdr>
-            <userId>unitTest</userId>
-            <resendFlag>0</resendFlag>
-          </_nbctlhdr>
-          <user>
-            <id>nablarch</id>
-            <name>ナブラーク</name>
-          </user>
-        </request>
-        ****************************/
+        String requestTelegram =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<request>\n" +
+                "  <_nbctlhdr>\n" +
+                "    <userId>unitTest</userId>\n" +
+                "    <resendFlag>0</resendFlag>\n" +
+                "  </_nbctlhdr>\n" +
+                "  <user>\n" +
+                "    <id>nablarch</id>\n" +
+                "    <name>ナブラーク</name>\n" +
+                "  </user>\n" +
+                "</request>";
 
         // 要求電文フォーマット
-        File requestFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
-        /****************************
-        file-type:      "XML"
-        text-encoding:  "UTF-8"
-        [request]
-        1 _nbctlhdr     OB
-        2 user          OB
-        [_nbctlhdr]
-        1 userId        X
-        2 resendFlag    X
-        [user]
-        1 id            X
-        2 name          X
-        ****************************/
-        requestFormatFile.deleteOnExit();
+        File requestFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
 
         // 想定される応答電文
-        String responseTelegram = Hereis.string();
-        /****************************
-        <?xml version="1.0" encoding="UTF-8"?>
-        <response>
-          <result>
-            <msg>success</msg>
-          </result>
-        </response>
-         ****************************/
+        String responseTelegram =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<response>\n" +
+                "  <result>\n" +
+                "    <msg>success</msg>\n" +
+                "  </result>\n" +
+                "</response>";
 
         // 応答電文フォーマット
-        File responseFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_SEND")));
-        /****************************
-        file-type:      "XML"
-        text-encoding:  "UTF-8"
-        [response]
-        1 result        OB
-        [result]
-        1 msg           X
-         ****************************/
-        responseFormatFile.deleteOnExit();
+        File responseFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_SEND")));
 
         // 要求データ
         byte[] requestData = requestTelegram.getBytes("UTF-8");
@@ -733,37 +582,21 @@ public class HttpMessagingResponseBuildingHandlerTest {
         String requestId = ThreadContext.getRequestId();
 
         // 要求電文
-        String requestTelegram = Hereis.string();
-        /****************************
-        <?xml version="1.0" encoding="UTF-8"?>
-        <request>
-          <_nbctlhdr>
-            <userId>unitTest</userId>
-            <resendFlag>0</resendFlag>
-          </_nbctlhdr>
-          <user>
-            <id>nablarch</id>
-            <name>ナブラーク</name>
-          </user>
-        </request>
-        ****************************/
+        String requestTelegram =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<request>\n" +
+                "  <_nbctlhdr>\n" +
+                "    <userId>unitTest</userId>\n" +
+                "    <resendFlag>0</resendFlag>\n" +
+                "  </_nbctlhdr>\n" +
+                "  <user>\n" +
+                "    <id>nablarch</id>\n" +
+                "    <name>ナブラーク</name>\n" +
+                "  </user>\n" +
+                "</request>";
 
         // 要求電文フォーマット
-        File requestFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
-        /****************************
-        file-type:      "XML"
-        text-encoding:  "UTF-8"
-        [request]
-        1 _nbctlhdr     OB
-        2 user          OB
-        [_nbctlhdr]
-        1 userId        X
-        2 resendFlag    X
-        [user]
-        1 id            X
-        2 name          X
-        ****************************/
-        requestFormatFile.deleteOnExit();
+        File requestFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
 
         // 要求データ
         byte[] requestData = requestTelegram.getBytes("UTF-8");
@@ -806,66 +639,36 @@ public class HttpMessagingResponseBuildingHandlerTest {
         String requestId = ThreadContext.getRequestId();
 
         // 要求電文
-        String requestTelegram = Hereis.string();
-        /****************************
-        <?xml version="1.0" encoding="UTF-8"?>
-        <request>
-          <_nbctlhdr>
-            <userId>unitTest</userId>
-            <resendFlag>0</resendFlag>
-          </_nbctlhdr>
-          <user>
-            <id>nablarch</id>
-            <name>ナブラーク</name>
-          </user>
-        </request>
-        ****************************/
+        String requestTelegram =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<request>\n" +
+                "  <_nbctlhdr>\n" +
+                "    <userId>unitTest</userId>\n" +
+                "    <resendFlag>0</resendFlag>\n" +
+                "  </_nbctlhdr>\n" +
+                "  <user>\n" +
+                "    <id>nablarch</id>\n" +
+                "    <name>ナブラーク</name>\n" +
+                "  </user>\n" +
+                "</request>";
 
         // 要求電文フォーマット
-        File requestFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
-        /****************************
-        file-type:      "XML"
-        text-encoding:  "UTF-8"
-        [request]
-        1 _nbctlhdr     OB
-        2 user          OB
-        [_nbctlhdr]
-        1 userId        X
-        2 resendFlag    X
-        [user]
-        1 id            X
-        2 name          X
-        ****************************/
-        requestFormatFile.deleteOnExit();
+        File requestFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
 
         // 想定される応答電文
-        String responseTelegram = Hereis.string();
-        /****************************
-        <?xml version="1.0" encoding="UTF-8"?>
-        <response>
-          <_nbctlhdr>
-            <statusCode>400</statusCode>
-          </_nbctlhdr>
-          <result>
-            <msg>fail</msg>
-          </result>
-        </response>
-         ****************************/
+        String responseTelegram =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<response>\n" +
+                "  <_nbctlhdr>\n" +
+                "    <statusCode>400</statusCode>\n" +
+                "  </_nbctlhdr>\n" +
+                "  <result>\n" +
+                "    <msg>fail</msg>\n" +
+                "  </result>\n" +
+                "</response>";
 
         // 応答電文フォーマット
-        File responseFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_SEND")));
-        /****************************
-        file-type:      "XML"
-        text-encoding:  "UTF-8"
-        [response]
-        1 _nbctlhdr     OB
-        2 result        OB
-        [_nbctlhdr]
-        1 statusCode    X
-        [result]
-        1 msg           X
-         ****************************/
-        responseFormatFile.deleteOnExit();
+        File responseFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_SEND")));
 
         // 要求データ
         byte[] requestData = requestTelegram.getBytes("UTF-8");
@@ -911,66 +714,36 @@ public class HttpMessagingResponseBuildingHandlerTest {
         String requestId = ThreadContext.getRequestId();
 
         // 要求電文
-        String requestTelegram = Hereis.string();
-        /****************************
-        <?xml version="1.0" encoding="UTF-8"?>
-        <request>
-          <_nbctlhdr>
-            <userId>unitTest</userId>
-            <resendFlag>0</resendFlag>
-          </_nbctlhdr>
-          <user>
-            <id>nablarch</id>
-            <name>ナブラーク</name>
-          </user>
-        </request>
-        ****************************/
+        String requestTelegram =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<request>\n" +
+                "  <_nbctlhdr>\n" +
+                "    <userId>unitTest</userId>\n" +
+                "    <resendFlag>0</resendFlag>\n" +
+                "  </_nbctlhdr>\n" +
+                "  <user>\n" +
+                "    <id>nablarch</id>\n" +
+                "    <name>ナブラーク</name>\n" +
+                "  </user>\n" +
+                "</request>";
 
         // 要求電文フォーマット
-        File requestFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
-        /****************************
-        file-type:      "XML"
-        text-encoding:  "UTF-8"
-        [request]
-        1 _nbctlhdr     OB
-        2 user          OB
-        [_nbctlhdr]
-        1 userId        X
-        2 resendFlag    X
-        [user]
-        1 id            X
-        2 name          X
-        ****************************/
-        requestFormatFile.deleteOnExit();
+        File requestFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
 
         // 想定される応答電文
-        String responseTelegram = Hereis.string();
-        /****************************
-        <?xml version="1.0" encoding="UTF-8"?>
-        <response>
-          <_nbctlhdr>
-            <statusCode>200</statusCode>
-          </_nbctlhdr>
-          <result>
-            <msg>success</msg>
-          </result>
-        </response>
-         ****************************/
+        String responseTelegram =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<response>\n" +
+                "  <_nbctlhdr>\n" +
+                "    <statusCode>200</statusCode>\n" +
+                "  </_nbctlhdr>\n" +
+                "  <result>\n" +
+                "    <msg>success</msg>\n" +
+                "  </result>\n" +
+                "</response>";
 
         // 応答電文フォーマット
-        File responseFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_SEND")));
-        /****************************
-        file-type:      "Hoge"
-        text-encoding:  "UTF-8"
-        [response]
-        1 _nbctlhdr     OB
-        2 result        OB
-        [_nbctlhdr]
-        1 statusCode    X
-        [result]
-        1 msg           X
-         ****************************/
-        responseFormatFile.deleteOnExit();
+        File responseFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_SEND")));
 
         // 要求データ
         byte[] requestData = requestTelegram.getBytes("UTF-8");
@@ -1018,56 +791,33 @@ public class HttpMessagingResponseBuildingHandlerTest {
         String requestId = ThreadContext.getRequestId();
 
         // 要求電文
-        String requestTelegram = Hereis.string();
-        /****************************
-        <?xml version="1.0" encoding="UTF-8"?>
-        <request>
-          <_nbctlhdr>
-            <userId>unitTest</userId>
-            <resendFlag>0</resendFlag>
-          </_nbctlhdr>
-          <user>
-            <id>nablarch</id>
-            <name>ナブラーク</name>
-          </user>
-        </request>
-        ****************************/
+        String requestTelegram =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<request>\n" +
+                "  <_nbctlhdr>\n" +
+                "    <userId>unitTest</userId>\n" +
+                "    <resendFlag>0</resendFlag>\n" +
+                "  </_nbctlhdr>\n" +
+                "  <user>\n" +
+                "    <id>nablarch</id>\n" +
+                "    <name>ナブラーク</name>\n" +
+                "  </user>\n" +
+                "</request>";
 
         // 要求電文フォーマット
-        File requestFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
-        /****************************
-        file-type:      "XML"
-        text-encoding:  "UTF-8"
-        [request]
-        1 user          OB
-        [user]
-        1 id            X
-        2 name          X
-        ****************************/
-        requestFormatFile.deleteOnExit();
+        File requestFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
 
         // 想定される応答電文
-        String responseTelegram = Hereis.string();
-        /****************************
-        <?xml version="1.0" encoding="UTF-8"?>
-        <response>
-          <result>
-            <msg>success</msg>
-          </result>
-        </response>
-         ****************************/
+        String responseTelegram =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<response>\n" +
+                "  <result>\n" +
+                "    <msg>success</msg>\n" +
+                "  </result>\n" +
+                "</response>";
 
         // 応答電文フォーマット
-        File responseFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_SEND")));
-        /****************************
-        file-type:      "XML"
-        text-encoding:  "UTF-8"
-        [response]
-        1 result        OB
-        [result]
-        1 msg           X
-         ****************************/
-        responseFormatFile.deleteOnExit();
+        File responseFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_SEND")));
 
         // 要求データ
         byte[] requestData = requestTelegram.getBytes("UTF-8");

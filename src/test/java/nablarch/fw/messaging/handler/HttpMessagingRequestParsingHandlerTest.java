@@ -6,9 +6,6 @@ package nablarch.fw.messaging.handler;
 import nablarch.core.ThreadContext;
 
 import nablarch.core.repository.SystemRepository;
-import nablarch.core.repository.di.ComponentDefinitionLoader;
-import nablarch.core.repository.di.DiContainer;
-import nablarch.core.repository.di.config.xml.XmlComponentDefinitionLoader;
 import nablarch.core.util.Builder;
 import nablarch.core.util.FilePathSetting;
 import nablarch.fw.ExecutionContext;
@@ -18,13 +15,12 @@ import nablarch.fw.web.HttpResponse;
 
 import nablarch.fw.web.servlet.ServletExecutionContext;
 import nablarch.test.core.log.LogVerifier;
+import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.log.app.OnMemoryLogWriter;
-import nablarch.test.support.tool.Hereis;
 import nablarch.test.support.web.servlet.MockServletContext;
 import nablarch.test.support.web.servlet.MockServletRequest;
 import nablarch.test.support.web.servlet.MockServletResponse;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -37,10 +33,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.containsString;
 
 /**
  * {@link HttpMessagingRequestParsingHandler}のテストを行います。
@@ -52,17 +48,8 @@ public class HttpMessagingRequestParsingHandlerTest {
     @Rule
     public TestName testNameRule = new TestName();
 
-    /**
-     * @throws Exception
-     */
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        // テスト用のリポジトリ構築
-        ComponentDefinitionLoader loader = new XmlComponentDefinitionLoader(
-                "nablarch/fw/messaging/handler/HttpMessagingDataParseHandlerTest.xml");
-        DiContainer container = new DiContainer(loader);
-        SystemRepository.load(container);
-    }
+    @Rule
+    public SystemRepositoryResource repositoryResource = new SystemRepositoryResource("nablarch/fw/messaging/handler/HttpMessagingDataParseHandlerTest.xml");
 
     /**
      * @throws Exception
@@ -188,17 +175,7 @@ public class HttpMessagingRequestParsingHandlerTest {
         String requestId = ThreadContext.getRequestId();
 
         // 要求電文フォーマット
-        File requestFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
-        /****************************
-         file-type:      "XML"
-         text-encoding:  "UTF-8"
-         [request]
-         1 user          OB
-         [user]
-         1 id            X
-         2 name          X
-         ****************************/
-        requestFormatFile.deleteOnExit();
+        File requestFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
 
         // 要求データ
         byte[] requestData = new byte[]{};
@@ -234,20 +211,18 @@ public class HttpMessagingRequestParsingHandlerTest {
         String requestId = ThreadContext.getRequestId();
 
         // 要求電文
-        String requestTelegram = Hereis.string();
-        /****************************
-         <?xml version="1.0" encoding="UTF-8"?>
-         <request>
-         <_nbctlhdr>
-         <userId>unitTest</userId>
-         <resendFlag>0</resendFlag>
-         </_nbctlhdr>
-         <user>
-         <id>nablarch</id>
-         <name>ナブラーク</name>
-         </user>
-         </request>
-         ****************************/
+        String requestTelegram =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<request>\n" +
+                "<_nbctlhdr>\n" +
+                "<userId>unitTest</userId>\n" +
+                "<resendFlag>0</resendFlag>\n" +
+                "</_nbctlhdr>\n" +
+                "<user>\n" +
+                "<id>nablarch</id>\n" +
+                "<name>ナブラーク</name>\n" +
+                "</user>\n" +
+                "</request>";
 
         // 要求データ
         byte[] requestData = requestTelegram.getBytes("UTF-8");
@@ -278,65 +253,49 @@ public class HttpMessagingRequestParsingHandlerTest {
         String requestId = ThreadContext.getRequestId();
 
         // 要求電文
-        String requestTelegram = Hereis.string();
-        /****************************
-         <?xml version="1.0" encoding="UTF-8"?>
-         <request>
-         <_nbctlhdr>
-         <userId>unitTest</userId>
-         <resendFlag>0</resendFlag>
-         </_nbctlhdr>
-         <user>
-         <id>nablarch</id>
-         <name>ナブラーク</name>
-         </user>
-         <user>
-         <id>nablarch</id>
-         <name>ナブラーク</name>
-         </user>
-         <user>
-         <id>nablarch</id>
-         <name>ナブラーク</name>
-         </user>
-         <user>
-         <id>nablarch</id>
-         <name>ナブラーク</name>
-         </user>
-         <user>
-         <id>nablarch</id>
-         <name>ナブラーク</name>
-         </user>
-         <user>
-         <id>nablarch</id>
-         <name>ナブラーク</name>
-         </user>
-         <user>
-         <id>nablarch</id>
-         <name>ナブラーク</name>
-         </user>
-         <user>
-         <id>nablarch</id>
-         <name>ナブラーク</name>
-         </user>
-         </request>
-         ****************************/
+        String requestTelegram =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<request>\n" +
+                "<_nbctlhdr>\n" +
+                "<userId>unitTest</userId>\n" +
+                "<resendFlag>0</resendFlag>\n" +
+                "</_nbctlhdr>\n" +
+                "<user>\n" +
+                "<id>nablarch</id>\n" +
+                "<name>ナブラーク</name>\n" +
+                "</user>\n" +
+                "<user>\n" +
+                "<id>nablarch</id>\n" +
+                "<name>ナブラーク</name>\n" +
+                "</user>\n" +
+                "<user>\n" +
+                "<id>nablarch</id>\n" +
+                "<name>ナブラーク</name>\n" +
+                "</user>\n" +
+                "<user>\n" +
+                "<id>nablarch</id>\n" +
+                "<name>ナブラーク</name>\n" +
+                "</user>\n" +
+                "<user>\n" +
+                "<id>nablarch</id>\n" +
+                "<name>ナブラーク</name>\n" +
+                "</user>\n" +
+                "<user>\n" +
+                "<id>nablarch</id>\n" +
+                "<name>ナブラーク</name>\n" +
+                "</user>\n" +
+                "<user>\n" +
+                "<id>nablarch</id>\n" +
+                "<name>ナブラーク</name>\n" +
+                "</user>\n" +
+                "<user>\n" +
+                "<id>nablarch</id>\n" +
+                "<name>ナブラーク</name>\n" +
+                "</user>\n" +
+                "</request>";
 
         // 要求電文フォーマット
-        File requestFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
-        /****************************
-         file-type:      "XML"
-         text-encoding:  "UTF-8"
-         [request]
-         1 _nbctlhdr     OB
-         2 user        [0..*]  OB
-         [_nbctlhdr]
-         1 userId        X
-         2 resendFlag    X
-         [user]
-         1 id            X
-         2 name          X
-         ****************************/
-        requestFormatFile.deleteOnExit();
+        File requestFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
 
         // 要求データ
         byte[] requestData = requestTelegram.getBytes("UTF-8");
@@ -392,38 +351,21 @@ public class HttpMessagingRequestParsingHandlerTest {
         String requestId = ThreadContext.getRequestId();
 
         // 要求電文
-        String requestTelegram = Hereis.string();
-        /****************************
-         <?xml version="1.0" encoding="UTF-8"?>
-         <request>
-         <_NGHeader>
-         <userId>unitTest</userId>
-         <resendFlag>0</resendFlag>
-         </_NGHeader>
-         <user>
-         <id>nablarch</id>
-         <name>ナブラーク</name>
-         </user>
-         </request>
-         ****************************/
+        String requestTelegram =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<request>\n" +
+                "<_NGHeader>\n" +
+                "<userId>unitTest</userId>\n" +
+                "<resendFlag>0</resendFlag>\n" +
+                "</_NGHeader>\n" +
+                "<user>\n" +
+                "<id>nablarch</id>\n" +
+                "<name>ナブラーク</name>\n" +
+                "</user>\n" +
+                "</request>";
 
         // 要求電文フォーマット
-        File requestFormatFile = Hereis.file(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
-        /****************************
-         file-type:      "XML"
-         text-encoding:  "UTF-8"
-         [request]
-         1 _nbctlhdr     OB
-         2 user          OB
-         [_nbctlhdr]
-         1 userId        X
-         2 resendFlag    X
-         [user]
-         1 id            X
-         2 name          X
-         ****************************/
-        requestFormatFile.deleteOnExit();
-
+        File requestFormatFile = new File(getFormatFileName(Builder.concat(requestId, "_RECEIVE")));
 
         // 要求データ
         byte[] requestData = requestTelegram.getBytes("UTF-8");
@@ -484,20 +426,18 @@ public class HttpMessagingRequestParsingHandlerTest {
         String requestId = ThreadContext.getRequestId();
 
         // 要求電文
-        String requestTelegram = Hereis.string();
-        /****************************
-         <?xml version="1.0" encoding="UTF-8"?>
-         <request>
-         <_nbctlhdr>
-         <userId>unitTest</userId>
-         <resendFlag>0</resendFlag>
-         </_nbctlhdr>
-         <user>
-         <id>nablarch</id>
-         <name>ナブラーク</name>
-         </user>
-         </request>
-         ****************************/
+        String requestTelegram =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<request>\n" +
+                "<_nbctlhdr>\n" +
+                "<userId>unitTest</userId>\n" +
+                "<resendFlag>0</resendFlag>\n" +
+                "</_nbctlhdr>\n" +
+                "<user>\n" +
+                "<id>nablarch</id>\n" +
+                "<name>ナブラーク</name>\n" +
+                "</user>\n" +
+                "</request>";
 
         // 要求データ
         byte[] requestData = requestTelegram.getBytes("UTF-8");

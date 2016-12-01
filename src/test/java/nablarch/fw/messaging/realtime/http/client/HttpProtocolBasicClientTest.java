@@ -14,7 +14,6 @@ import nablarch.fw.web.HttpRequest;
 import nablarch.fw.web.HttpResponse;
 import nablarch.fw.web.HttpServer;
 import nablarch.fw.web.servlet.HttpRequestWrapper;
-import nablarch.test.support.tool.Hereis;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -313,33 +312,29 @@ public class HttpProtocolBasicClientTest {
         assertThat((String)httpResult.getReadObject(), is(expectedResponseBody));
         
         //XML
-        requestBody = Hereis.string();
-        /*********************************************************
-        <?xml version="1.0" encoding="UTF-8"?>
-        <request>
-          <_nbctlhdr>
-            <userId>unitTest</userId>
-            <resendFlag>0</resendFlag>
-          </_nbctlhdr>
-          <user>
-            <id>nablarch</id>
-            <name>ナブラーク</name>
-          </user>
-        </request>
-        **********************************************************/
+        requestBody =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<request>\n" +
+                "  <_nbctlhdr>\n" +
+                "    <userId>unitTest</userId>\n" +
+                "    <resendFlag>0</resendFlag>\n" +
+                "  </_nbctlhdr>\n" +
+                "  <user>\n" +
+                "    <id>nablarch</id>\n" +
+                "    <name>ナブラーク</name>\n" +
+                "  </user>\n" +
+                "</request>";
         
-        expectedResponseBody = Hereis.string();
-        /*********************************************************
-        <?xml version="1.0" encoding="UTF-8"?>
-        <response>
-          <_nbctlhdr>
-            <statusCode>200</statusCode>
-          </_nbctlhdr>
-          <result>
-            <msg>OK</msg>
-          </result>
-        </response>
-        **********************************************************/
+        expectedResponseBody =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<response>\n" +
+                "  <_nbctlhdr>\n" +
+                "    <statusCode>200</statusCode>\n" +
+                "  </_nbctlhdr>\n" +
+                "  <result>\n" +
+                "    <msg>OK</msg>\n" +
+                "  </result>\n" +
+                "</response>";
         
         streamReader = new CharHttpStreamReader();
         urlParams = new HashMap<String, String>();
@@ -354,20 +349,25 @@ public class HttpProtocolBasicClientTest {
         assertThat((String)httpResult.getReadObject(), is(expectedResponseBody));
         
         //JSON
-        requestBody = Hereis.string();
-        /*********************************************************
-        {"_nbctlhdr":
-          {"userId":"unitTest"
-          ,"resendFlag":"0"
-          }
-        ,"user":
-          {"id":"nablarch"
-          ,"name":"ナブラーク"
-          }
-        }
-        **********************************************************/
+        requestBody =
+                "{\"_nbctlhdr\":\n" +
+                "  {\"userId\":\"unitTest\"\n" +
+                "  ,\"resendFlag\":\"0\"\n" +
+                "  }\n" +
+                ",\"user\":\n" +
+                "  {\"id\":\"nablarch\"\n" +
+                "  ,\"name\":\"ナブラーク\"\n" +
+                "  }\n" +
+                "}";
         
-        expectedResponseBody = Hereis.string();
+        expectedResponseBody =
+                "{\"_nbctlhdr\":\n" +
+                "  {\"statusCode\":\"200\"\n" +
+                "  }\n" +
+                ",\"result\":\n" +
+                "  {\"msg\":\"OK\"\n" +
+                "  }\n" +
+                "}";
         /*********************************************************
         {"_nbctlhdr":
           {"statusCode":"200"
@@ -895,36 +895,31 @@ public class HttpProtocolBasicClientTest {
                 baos.write(buf, 0, len);
             }
             String requestBody = baos.toString("UTF-8");
-            String expectedRequestBody = Hereis.string();
-            /*********************************************************
-            <?xml version="1.0" encoding="UTF-8"?>
-            <request>
-              <_nbctlhdr>
-                <userId>unitTest</userId>
-                <resendFlag>0</resendFlag>
-              </_nbctlhdr>
-              <user>
-                <id>nablarch</id>
-                <name>ナブラーク</name>
-              </user>
-            </request>
-            **********************************************************/
+            String expectedRequestBody = "" +
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                    "<request>\n" +
+                    "  <_nbctlhdr>\n" +
+                    "    <userId>unitTest</userId>\n" +
+                    "    <resendFlag>0</resendFlag>\n" +
+                    "  </_nbctlhdr>\n" +
+                    "  <user>\n" +
+                    "    <id>nablarch</id>\n" +
+                    "    <name>ナブラーク</name>\n" +
+                    "  </user>\n" +
+                    "</request>";
             
             assertThat(requestBody, is(expectedRequestBody));
             
-            String responseBody = Hereis.string();
-            /*********************************************************
-            <?xml version="1.0" encoding="UTF-8"?>
-            <response>
-              <_nbctlhdr>
-                <statusCode>200</statusCode>
-              </_nbctlhdr>
-              <result>
-                <msg>OK</msg>
-              </result>
-            </response>
-            **********************************************************/
-            
+            String responseBody =
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                    "<response>\n" +
+                    "  <_nbctlhdr>\n" +
+                    "    <statusCode>200</statusCode>\n" +
+                    "  </_nbctlhdr>\n" +
+                    "  <result>\n" +
+                    "    <msg>OK</msg>\n" +
+                    "  </result>\n" +
+                    "</response>";
             
             return new HttpResponse(200)
             .setContentType("application/xml; charset=UTF-8")
@@ -944,33 +939,28 @@ public class HttpProtocolBasicClientTest {
                 baos.write(buf, 0, len);
             }
             String requestBody = baos.toString("UTF-8");
-            String expectedRequestBody = Hereis.string();
-            /*********************************************************
-            {"_nbctlhdr":
-              {"userId":"unitTest"
-              ,"resendFlag":"0"
-              }
-            ,"user":
-              {"id":"nablarch"
-              ,"name":"ナブラーク"
-              }
-            }
-            **********************************************************/
+            String expectedRequestBody =
+                    "{\"_nbctlhdr\":\n" +
+                    "  {\"userId\":\"unitTest\"\n" +
+                    "  ,\"resendFlag\":\"0\"\n" +
+                    "  }\n" +
+                    ",\"user\":\n" +
+                    "  {\"id\":\"nablarch\"\n" +
+                    "  ,\"name\":\"ナブラーク\"\n" +
+                    "  }\n" +
+                    "}";
             
             assertThat(requestBody, is(expectedRequestBody));
             
-            String responseBody = Hereis.string();
-            /*********************************************************
-            {"_nbctlhdr":
-              {"statusCode":"200"
-              }
-            ,"result":
-              {"msg":"OK"
-              }
-            }
-            **********************************************************/
-            
-            
+            String responseBody =
+                    "{\"_nbctlhdr\":\n" +
+                    "  {\"statusCode\":\"200\"\n" +
+                    "  }\n" +
+                    ",\"result\":\n" +
+                    "  {\"msg\":\"OK\"\n" +
+                    "  }\n" +
+                    "}";
+
             return new HttpResponse(200)
             .setContentType("application/xml; charset=UTF-8")
             .setBodyStream(new ByteArrayInputStream(responseBody.getBytes("UTF-8")));

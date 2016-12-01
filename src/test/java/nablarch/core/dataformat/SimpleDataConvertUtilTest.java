@@ -1,13 +1,8 @@
 package nablarch.core.dataformat;
 
-import nablarch.core.repository.SystemRepository;
-import nablarch.core.repository.di.ComponentDefinitionLoader;
-import nablarch.core.repository.di.DiContainer;
-import nablarch.core.repository.di.config.xml.XmlComponentDefinitionLoader;
 import nablarch.core.util.Builder;
 import nablarch.core.util.FilePathSetting;
-import nablarch.test.support.tool.Hereis;
-import org.junit.BeforeClass;
+import nablarch.test.support.SystemRepositoryResource;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -33,16 +28,8 @@ public class SimpleDataConvertUtilTest {
     @Rule
     public TestName testNameRule = new TestName();
 
-    @BeforeClass
-    public static void setUpClass() {
-        // テスト用のリポジトリ構築
-        ComponentDefinitionLoader loader = new XmlComponentDefinitionLoader(
-                "nablarch/core/dataformat/SimpleDataConvertUtil.xml");
-        DiContainer container = new DiContainer(loader);
-        SystemRepository.clear();
-        SystemRepository.load(container);
-
-    }
+    @Rule
+    public SystemRepositoryResource repositoryResource = new SystemRepositoryResource("nablarch/core/dataformat/SimpleDataConvertUtil.xml");
 
     private String getFormatFileName(String formatName) {
         return Builder.concat(
@@ -67,22 +54,10 @@ public class SimpleDataConvertUtilTest {
         String formatName = testNameRule.getMethodName();
 
         // フォーマットファイル生成
-        File formatFile = Hereis.file(getFormatFileName(formatName));
-        /*******
-        file-type:        "JSON"
-        text-encoding:    "UTF-8"
-        [request]
-        1 key X
-        *******/
-        formatFile.deleteOnExit();
+        File formatFile = new File(getFormatFileName(formatName));
 
         // JSONデータ生成
-        String data = Hereis.string();
-        /*******
-        {
-          "key":"value"
-        }
-        *******/
+        String data = "{\n\"key\":\"value\"\n}";
 
         // 期待結果Map生成
         Map<String, Object> expectedMap = new HashMap<String, Object>() {
@@ -118,14 +93,7 @@ public class SimpleDataConvertUtilTest {
         String formatName = testNameRule.getMethodName();
 
         // フォーマットファイル生成
-        File formatFile = Hereis.file(getFormatFileName(formatName));
-        /*******
-        file-type:        "JSON"
-        text-encoding:    "UTF-8"
-        [request]
-        1 key X
-        *******/
-        formatFile.deleteOnExit();
+        File formatFile = new File(getFormatFileName(formatName));
 
         // データMap生成
         Map<String, Object> dataMap = new HashMap<String, Object>() {
@@ -135,10 +103,7 @@ public class SimpleDataConvertUtilTest {
             }};
 
         // 期待結果JSONデータ生成
-        String expectedData = Hereis.string().trim();
-        /*******
-        {"key":"value"}
-        *******/
+        String expectedData = "{\"key\":\"value\"}";
 
         String expectedDataType = "JSON";
         String expectedMimeType = "application/json";
@@ -168,22 +133,10 @@ public class SimpleDataConvertUtilTest {
         String formatName = testNameRule.getMethodName();
 
         // フォーマットファイル生成
-        File formatFile = Hereis.file(getFormatFileName(formatName));
-        /*******
-        file-type:        "Hoge"
-        text-encoding:    "UTF-8"
-        [request]
-        1 key X
-        *******/
-        formatFile.deleteOnExit();
+        File formatFile = new File(getFormatFileName(formatName));
 
         // JSONデータ生成
-        String data = Hereis.string();
-        /*******
-        {
-          "key":"value"
-        }
-        *******/
+        String data = "\n\"key\":\"value\"\n";
 
         Map<String, Object> expectedMap = null;
         String expectedDataType = null;
@@ -214,22 +167,11 @@ public class SimpleDataConvertUtilTest {
         String formatName = testNameRule.getMethodName();
 
         // フォーマットファイル生成
-        File formatFile = Hereis.file(getFormatFileName(formatName));
-        /*******
-        file-type:        "IoEx"
-        text-encoding:    "UTF-8"
-        [request]
-        1 key X
-         *******/
-        formatFile.deleteOnExit();
+        File formatFile = new File(getFormatFileName(formatName));
 
         // JSONデータ生成
-        String data = Hereis.string();
-        /*******
-        {
-          "key":"value"
-        }
-         *******/
+        String data = "\n\"key\":\"value\"\n";
+
         Map<String, Object> mapData = new HashMap<String, Object>();
         mapData.put("key", "value");
 

@@ -9,7 +9,7 @@
              class="nablarch.core.util.FilePathSetting" autowireType="None">
     <property name="basePathSettings">
       <map>
-        <entry key="format" value="file:temp/format" />
+        <entry key="format" value="file:src/test/resources/nablarch/fw/messaging/realtime/http/client/format" />
       </map>
     </property>
     <property name="fileExtensions">
