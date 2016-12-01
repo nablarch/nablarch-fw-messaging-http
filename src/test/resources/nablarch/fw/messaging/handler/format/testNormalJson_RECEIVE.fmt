@@ -1,0 +1,11 @@
+file-type:      "JSON"
+text-encoding:  "UTF-8"
+[request]
+1 _nbctlhdr     OB
+2 user          OB
+[_nbctlhdr]
+1 userId        X
+2 resendFlag    X
+[user]
+1 id            X
+2 name          X

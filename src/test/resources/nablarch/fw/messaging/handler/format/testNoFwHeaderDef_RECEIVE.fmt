@@ -1,0 +1,8 @@
+ file-type:      "XML"
+ text-encoding:  "UTF-8"
+ [request]
+ 1 user          OB
+ [user]
+ 1 id            X
+ 2 name          X
+ 

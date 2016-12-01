@@ -1,0 +1,10 @@
+file-type:      "XML"
+text-encoding:  "UTF-8"
+[response]
+1 _nbctlhdr     OB
+2 result        OB
+[_nbctlhdr]
+1 statusCode    X
+[result]
+1 msg           X
+ 

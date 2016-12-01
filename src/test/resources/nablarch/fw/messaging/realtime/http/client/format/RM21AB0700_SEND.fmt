@@ -1,0 +1,7 @@
+file-type:        "JSON"
+text-encoding:    "UTF-8"
+[request]
+1 userId X
+2 requestId X
+3 firstName N
+4 lastName N
