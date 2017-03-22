@@ -13,8 +13,9 @@ import nablarch.fw.messaging.realtime.http.exception.HttpMessagingInvalidDataFor
 import nablarch.fw.messaging.realtime.http.streamio.HttpInputStreamReader;
 import nablarch.fw.messaging.realtime.http.streamio.HttpOutputStreamWriter;
 import nablarch.test.core.log.LogVerifier;
+import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.tool.Hereis;
-import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.File;
@@ -39,16 +40,15 @@ import static org.junit.Assert.fail;
  */
 public class HttpMessagingClientTest {
 
+    @Rule
+    public SystemRepositoryResource resource = new SystemRepositoryResource("nablarch/fw/messaging/realtime/http/client/HttpMessagingClientTest.xml");
+
     public void initRepository(String suffix) {
+        SystemRepository.clear();
         XmlComponentDefinitionLoader loader = new XmlComponentDefinitionLoader(
                 this.getClass().getName().replace('.', '/') + suffix + ".xml");
         DiContainer container = new DiContainer(loader);
         SystemRepository.load(container);
-    }
-
-    @After
-    public void tearDown() {
-        SystemRepository.clear();
     }
 
     private String getFormatFileName(String formatName) {
@@ -79,8 +79,6 @@ public class HttpMessagingClientTest {
      */
     @Test
     public void testGetMessage() {
-        initRepository("");
-
         //ユニットテスト用フォーマット定義ファイル準備
         prepareFormatFileGetMessage();
 
@@ -153,8 +151,6 @@ public class HttpMessagingClientTest {
      */
     @Test
     public void testGet404() {
-        initRepository("");
-
         //ユニットテスト用フォーマット定義ファイル準備
         prepareFormatFileGetMessage();
 
@@ -237,8 +233,6 @@ public class HttpMessagingClientTest {
      */
     @Test
     public void testPostMessage() {
-        initRepository("");
-        
         //ユニットテスト用フォーマット定義ファイル準備
         prepareFormatFilePostMessage();
 
@@ -487,7 +481,6 @@ public class HttpMessagingClientTest {
      */
     @Test
     public void tesPutMessageBody() {
-        initRepository("");
         //ユニットテスト用フォーマット定義ファイル準備
         prepareFormatFilePutMessage();
 
@@ -647,7 +640,6 @@ public class HttpMessagingClientTest {
      */
     @Test
     public void tesDeleteMessage() {
-        initRepository("");
         prepareFormatFileDeleteMessage();
 
         SyncMessage requestMessage = null;
@@ -814,6 +806,8 @@ public class HttpMessagingClientTest {
 
             //MessagingExceptionでもキャッチ可能なことを確認
             assertThat(e, is(instanceOf(MessagingException.class)));
+        } finally {
+            SystemRepository.clear();
         }
     }
 
@@ -904,6 +898,8 @@ public class HttpMessagingClientTest {
             assertThat(e, is(instanceOf(MessagingException.class)));
             
             LogVerifier.verify("messaging log assertion failed.");
+        } finally {
+            SystemRepository.clear();
         }
     }
 
@@ -953,6 +949,8 @@ public class HttpMessagingClientTest {
         } catch (Exception e) {
             assertThat(e, is(instanceOf(MessagingException.class)));
             assertThat(e.getMessage(), is("HOGE is unsupported HTTP method."));
+        } finally {
+            SystemRepository.clear();
         }
     }
 
@@ -961,8 +959,6 @@ public class HttpMessagingClientTest {
      */
     @Test
     public void testMessageId() {
-        initRepository("");
-
         //ユニットテスト用フォーマット定義ファイル準備
         prepareFormatFileMessageId();
 
@@ -1020,7 +1016,6 @@ public class HttpMessagingClientTest {
      */
     @Test
     public void testHeader_bigDecimal() {
-        initRepository("");
         prepareFormatFileMessageId();
 
         SyncMessage requestMessage = new SyncMessage("RM21AB0600");
@@ -1058,8 +1053,6 @@ public class HttpMessagingClientTest {
      */
     @Test
     public void testFwHeader() {
-        initRepository("");
-        
         //ユニットテスト用フォーマット定義ファイル準備
         prepareFormatFileFwHeader();
 

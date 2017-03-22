@@ -14,15 +14,11 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
-import nablarch.core.repository.SystemRepository;
-import nablarch.core.repository.di.ComponentDefinitionLoader;
-import nablarch.core.repository.di.DiContainer;
-import nablarch.core.repository.di.config.xml.XmlComponentDefinitionLoader;
 import nablarch.core.util.Builder;
 import nablarch.core.util.FilePathSetting;
+import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.tool.Hereis;
 
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -37,16 +33,8 @@ public class SimpleDataConvertUtilTest {
     @Rule
     public TestName testNameRule = new TestName();
 
-    @BeforeClass
-    public static void setUpClass() {
-        // テスト用のリポジトリ構築
-        ComponentDefinitionLoader loader = new XmlComponentDefinitionLoader(
-                "nablarch/core/dataformat/SimpleDataConvertUtil.xml");
-        DiContainer container = new DiContainer(loader);
-        SystemRepository.clear();
-        SystemRepository.load(container);
-
-    }
+    @Rule
+    public SystemRepositoryResource resource = new SystemRepositoryResource("nablarch/core/dataformat/SimpleDataConvertUtil.xml");
 
     private String getFormatFileName(String formatName) {
         return Builder.concat(

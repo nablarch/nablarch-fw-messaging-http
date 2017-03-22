@@ -15,20 +15,19 @@ public class SentMessage {
     public SentMessage() {
     }
 
-	public SentMessage(String messageId, String requestId, String replyQueue,
-			String statusCode, byte[] bodyData) {
-		this.messageId = messageId;
-		this.requestId = requestId;
-		this.replyQueue = replyQueue;
-		this.statusCode = statusCode;
-		this.bodyData = bodyData;
-	}
+    public SentMessage(String messageId, String requestId, String replyQueue, String statusCode, byte[] bodyData) {
+        this.messageId = messageId;
+        this.requestId = requestId;
+        this.replyQueue = replyQueue;
+        this.statusCode = statusCode;
+        this.bodyData = bodyData;
+    }
 
-	@Id
+    @Id
     @Column(name = "MESSAGE_ID", length = 64, nullable = false)
     public String messageId;
 
-	@Id
+    @Id
     @Column(name = "REQUEST_ID", length = 64, nullable = false)
     public String requestId;
 

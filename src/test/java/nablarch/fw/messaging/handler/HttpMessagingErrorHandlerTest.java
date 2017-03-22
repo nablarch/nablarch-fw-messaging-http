@@ -1,6 +1,5 @@
 package nablarch.fw.messaging.handler;
 
-import nablarch.core.log.app.OnMemoryLogWriter;
 import nablarch.fw.Result.Error;
 import nablarch.fw.web.HttpErrorResponse;
 import nablarch.fw.web.HttpRequest;
@@ -8,6 +7,7 @@ import nablarch.fw.web.HttpResponse;
 import nablarch.fw.web.handler.HttpRequestJavaPackageMapping;
 import nablarch.fw.web.servlet.MockServletRequest;
 import nablarch.fw.web.servlet.ServletExecutionContext;
+import nablarch.test.support.log.app.OnMemoryLogWriter;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,10 +17,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.containsString;
 
 public class HttpMessagingErrorHandlerTest {
     

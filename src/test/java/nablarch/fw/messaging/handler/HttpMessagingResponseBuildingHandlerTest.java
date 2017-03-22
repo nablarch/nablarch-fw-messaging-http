@@ -1,6 +1,3 @@
-/**
- *
- */
 package nablarch.fw.messaging.handler;
 
 import nablarch.core.ThreadContext;
@@ -10,7 +7,6 @@ import nablarch.core.dataformat.DataRecordFormatterSupport;
 import nablarch.core.dataformat.FormatterFactory;
 import nablarch.core.dataformat.InvalidDataFormatException;
 import nablarch.core.dataformat.LayoutDefinition;
-import nablarch.core.log.app.OnMemoryLogWriter;
 import nablarch.core.repository.SystemRepository;
 import nablarch.core.repository.di.ComponentDefinitionLoader;
 import nablarch.core.repository.di.DiContainer;
@@ -29,9 +25,10 @@ import nablarch.fw.web.servlet.MockServletRequest;
 import nablarch.fw.web.servlet.MockServletResponse;
 import nablarch.fw.web.servlet.ServletExecutionContext;
 import nablarch.test.core.log.LogVerifier;
+import nablarch.test.support.SystemRepositoryResource;
+import nablarch.test.support.log.app.OnMemoryLogWriter;
 import nablarch.test.support.tool.Hereis;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -62,17 +59,8 @@ public class HttpMessagingResponseBuildingHandlerTest {
     @Rule
     public TestName testNameRule = new TestName();
 
-    /**
-     * @throws Exception
-     */
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        // テスト用のリポジトリ構築
-        ComponentDefinitionLoader loader = new XmlComponentDefinitionLoader(
-                "nablarch/fw/messaging/handler/HttpMessagingDataParseHandlerTest.xml");
-        DiContainer container = new DiContainer(loader);
-        SystemRepository.load(container);
-    }
+    @Rule
+    public SystemRepositoryResource resource = new SystemRepositoryResource("nablarch/fw/messaging/handler/HttpMessagingDataParseHandlerTest.xml");
 
     /**
      * @throws Exception

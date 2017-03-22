@@ -1,7 +1,5 @@
 package nablarch.fw.web.servlet;
 
-import nablarch.common.web.WebTestUtil;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -17,6 +15,11 @@ import java.util.Map;
  * @author Kiyohito Itoh
  */
 public class MockServletResponse implements HttpServletResponse {
+
+    /**
+     *  HttpServletResponse#encodeURL が呼ばれたかどうかの確認に使用する。
+     */
+    private static final String ENCODE_URL_SUFFIX = "_encode_suffix";
 
     private Map<String, List<String>> map = new HashMap<String, List<String>>();
     
@@ -92,7 +95,7 @@ public class MockServletResponse implements HttpServletResponse {
      * {@inheritDoc}
      */
     public String encodeURL(String arg0) {
-        return arg0 + WebTestUtil.ENCODE_URL_SUFFIX;
+        return arg0 + ENCODE_URL_SUFFIX;
     }
 
     /**
