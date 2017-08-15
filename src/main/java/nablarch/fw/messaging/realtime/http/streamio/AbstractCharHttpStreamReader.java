@@ -21,7 +21,7 @@ public abstract class AbstractCharHttpStreamReader extends AbstractHttpStreamRea
      * @param values 値
      */
     protected void setParamsFromHeader(String key, List<String> values) {
-        if ("Content-Type".equals(key)) {
+        if ("content-type".equalsIgnoreCase(key)) {
             setContentTypeFromHeader(values);
         }
     }

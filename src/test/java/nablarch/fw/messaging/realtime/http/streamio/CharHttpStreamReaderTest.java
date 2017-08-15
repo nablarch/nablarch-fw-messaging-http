@@ -1,15 +1,17 @@
 package nablarch.fw.messaging.realtime.http.streamio;
 
-import org.junit.Test;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import nablarch.core.util.FileUtil;
+
+import org.junit.Test;
 
 public class CharHttpStreamReaderTest extends CharHttpStreamReader {
 
@@ -24,20 +26,15 @@ public class CharHttpStreamReaderTest extends CharHttpStreamReader {
             
             CharHttpStreamReader charHttpStreamReader = new CharHttpStreamReader();
             Map<String, List<String>> headerFields = new TreeMap<String, List<String>>();
-            List<String> list = null;
-            list = new ArrayList<String>();
-            list.add("application/json; charset=UTF-8");
-            headerFields.put("Content-Type", list);
-            list = new ArrayList<String>();
-            list.add("a");
-            headerFields.put("X-x", list);
+            headerFields.put("content-type", Collections.singletonList("application/json; charset=UTF-8"));
+            headerFields.put("X-x", Collections.singletonList("a"));
             
             charHttpStreamReader.setHeaderInfo(headerFields);
             
             Object readObject = charHttpStreamReader.readInputStream(byteArrayInputStream);
             assertThat((String)readObject, is(" あいう\nえお "));
         }finally{
-            byteArrayInputStream.close();
+            FileUtil.closeQuietly(byteArrayInputStream);
         }
 
         try{
