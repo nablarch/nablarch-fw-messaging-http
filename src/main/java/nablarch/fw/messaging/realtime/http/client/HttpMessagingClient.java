@@ -302,7 +302,7 @@ public class HttpMessagingClient implements MessageSenderClient {
      * @return コンテンツタイプ
      */
     protected String getRequestContentsType(HttpRequestMethodEnum httpMethod, SimpleDataConvertResult requestBodyDataConvertResult) {
-        String contentType = "text/plane";
+        String contentType = "text/plain";
         Charset charset = Charset.forName("UTF-8");
         if (getExistBodyHttpMethod().contains(httpMethod.toString())) {
             //Body部が存在するHTTPメソッドについては、コンテンツタイプを取得する。

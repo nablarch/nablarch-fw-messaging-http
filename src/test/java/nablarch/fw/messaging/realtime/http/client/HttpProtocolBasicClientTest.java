@@ -151,7 +151,7 @@ public class HttpProtocolBasicClientTest {
         headerParamList.add("testval");
         headerInfo.put("x-Test", headerParamList);
         httpProtocolBasicClient = new HttpProtocolBasicClient();
-        httpProtocolBasicClient.setAccept("text/plane");
+        httpProtocolBasicClient.setAccept("text/plain");
         httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.GET,
                 "http://localhost:8766/action/020.do", headerInfo, urlParams, null, streamReader);
@@ -628,7 +628,7 @@ public class HttpProtocolBasicClientTest {
         //ありえないエンコーディング
         httpProtocolBasicClient.setQueryStringEncoding("hogehoge");
         
-        httpProtocolBasicClient.setAccept("text/plane");
+        httpProtocolBasicClient.setAccept("text/plain");
         httpProtocolBasicClient.setContentType("application/json");
         try{
             httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.GET,
@@ -685,7 +685,7 @@ public class HttpProtocolBasicClientTest {
             assertThat(req.getParam("b")[0], is("テストGET要求2"));
             assertThat(req.getHeaderMap().get("x-Test"), is("testval"));
             assertThat(req.getHeaderMap().get("content-type"), is("application/json"));
-            assertThat(req.getHeaderMap().get("accept"), is("text/plane"));
+            assertThat(req.getHeaderMap().get("accept"), is("text/plain"));
             String responseBody = "テストGET応答";
             return new HttpResponse(200)
                   .setBodyStream(new ByteArrayInputStream(responseBody.getBytes("UTF-8")));
