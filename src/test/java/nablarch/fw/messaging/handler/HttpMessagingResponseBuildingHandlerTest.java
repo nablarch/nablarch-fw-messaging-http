@@ -269,7 +269,7 @@ public class HttpMessagingResponseBuildingHandlerTest {
             <statusCode>200</statusCode>
           </_nbctlhdr>
           <result>
-            <msg>succes\ns</msg>
+            <msg>🙀🙀🙀succes🙀🙀🙀\ns</msg>
           </result>
         </response>
          ****************************/
@@ -294,7 +294,7 @@ public class HttpMessagingResponseBuildingHandlerTest {
 
         // ダミー業務クラスで返却する応答データ
         Map<String, Object> resObj = new HashMap<String, Object>();
-        resObj.put("result.msg", "succes\\ns");
+        resObj.put("result.msg", "🙀🙀🙀succes🙀🙀🙀\\ns");
 
         LogVerifier.setExpectedLogMessages(createExpectedLogMessages(requestTelegram, createResponseData(responseTelegram, "UTF-8", responseFormatFile)));
 
@@ -372,7 +372,7 @@ public class HttpMessagingResponseBuildingHandlerTest {
             "statusCode":"200"
           }
           "result":{
-            "msg":" success \n"
+            "msg":" 🙀🙀🙀success🙀🙀🙀 \n"
           }
         }
         ****************************/
@@ -397,7 +397,7 @@ public class HttpMessagingResponseBuildingHandlerTest {
 
         // ダミー業務クラスで返却する応答データ
         Map<String, Object> resObj = new HashMap<String, Object>();
-        resObj.put("result.msg", " success \n");
+        resObj.put("result.msg", " 🙀🙀🙀success🙀🙀🙀 \n");
 
         // 期待値
         LogVerifier.setExpectedLogMessages(createExpectedLogMessages(requestTelegram, createResponseData(responseTelegram, "UTF-8", responseFormatFile)));
