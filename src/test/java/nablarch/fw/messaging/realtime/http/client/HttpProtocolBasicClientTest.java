@@ -268,13 +268,15 @@ public class HttpProtocolBasicClientTest {
 
         //record-separatorあり固定長の複数レコード
         requestBody = StringUtil.rpad("RM21AB0203", 20, ' ') + StringUtil.rpad("太郎", 10, '　') + StringUtil.rpad("ナブラ", 10, '　') + StringUtil.repeat(' ', 40) + "\n"
-                    + StringUtil.rpad("RM21AB0203", 20, ' ') + StringUtil.rpad("太郎", 10, '　') + StringUtil.rpad("ナブラ", 10, '　') + StringUtil.repeat(' ', 40) + "\n";
+                    + StringUtil.rpad("RM21AB0203", 20, ' ') + StringUtil.rpad("太郎", 10, '　') + StringUtil.rpad("ナブラ", 10, '　') + StringUtil.repeat(' ', 40) + "\n"
+        //サロゲートペア対応
+                    + StringUtil.rpad("RM21AB0203", 20, ' ') + StringUtil.rpad("🙀🙀🙀", 10, '　') + StringUtil.rpad("🙀🙀🙀", 10, '　') + StringUtil.repeat(' ', 40) + "\n";
         expectedResponseBody = "100" + StringUtil.rpad("OK", 50, ' ') + StringUtil.repeat(' ', 47) + "\n"
                              + "100" + StringUtil.rpad("OK", 50, ' ') + StringUtil.repeat(' ', 47) + "\n";
         streamReader = new CharHttpStreamReader();
         urlParams = new HashMap<String, String>();
         headerInfo = new HashMap<String, List<String>>();
-        streamWriter = new CharHttpStreamWritter("MS932");
+        streamWriter = new CharHttpStreamWritter("UTF-8");
         streamWriter.append(requestBody);
         httpProtocolBasicClient = new HttpProtocolBasicClient();
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.POST,
@@ -824,9 +826,10 @@ public class HttpProtocolBasicClientTest {
             while((len = is.read(buf)) > 0) {
                 baos.write(buf, 0, len);
             }
-            String requestBody = baos.toString("MS932");
+            String requestBody = baos.toString("UTF-8");
             String expectedRequestBody = StringUtil.rpad("RM21AB0203", 20, ' ') + StringUtil.rpad("太郎", 10, '　') + StringUtil.rpad("ナブラ", 10, '　') + StringUtil.repeat(' ', 40) + "\n"
-                                       + StringUtil.rpad("RM21AB0203", 20, ' ') + StringUtil.rpad("太郎", 10, '　') + StringUtil.rpad("ナブラ", 10, '　') + StringUtil.repeat(' ', 40) + "\n";
+                                       + StringUtil.rpad("RM21AB0203", 20, ' ') + StringUtil.rpad("太郎", 10, '　') + StringUtil.rpad("ナブラ", 10, '　') + StringUtil.repeat(' ', 40) + "\n"
+                                       + StringUtil.rpad("RM21AB0203", 20, ' ') + StringUtil.rpad("🙀🙀🙀", 10, '　') + StringUtil.rpad("🙀🙀🙀", 10, '　') + StringUtil.repeat(' ', 40) + "\n";
             assertThat(requestBody, is(expectedRequestBody));
             
             String responseBody = "100" + StringUtil.rpad("OK", 50, ' ') + StringUtil.repeat(' ', 47) + "\n"
