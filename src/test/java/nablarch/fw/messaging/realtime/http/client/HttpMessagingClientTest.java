@@ -334,7 +334,7 @@ public class HttpMessagingClientTest {
                         map.put(null, arrayList);
                         httpResult.setHeaderInfo(map);
                         httpResult.setResponseCode(200);
-                        String readObject = "{\"messageCode\":\"100\", \"message\":\"OK\"}";
+                        String readObject = "{\"messageCode\":\"100\", \"message\":\"🙀🙀🙀OK🙀🙀🙀\"}";
                         httpResult.setReadObject(readObject);
                         return httpResult;
                     }
@@ -347,7 +347,7 @@ public class HttpMessagingClientTest {
                 createExpectedLogMessages(
                         "{\"requestId\":\"RM21AB0201\",\"firstName\":\"太郎\",\"lastName\":\"ナブラ\",\"surrogatepair\":\"🙀🙀🙀 \\n\"}",
                         "POST http://localhost:8090/rm21ab0201",
-                        "{\"messageCode\":\"100\", \"message\":\"OK\"}",
+                        "{\"messageCode\":\"100\", \"message\":\"🙀🙀🙀OK🙀🙀🙀\"}",
                         200));
         
         reciveMessage = client.sendSync(settings, requestMessage);
@@ -361,7 +361,7 @@ public class HttpMessagingClientTest {
         assertThat((String)(headerRecord.get("Content-Type")), is("application/json; charset=UTF-8"));
         dataRecord = reciveMessage.getDataRecord();
         assertThat((String)(dataRecord.get("messageCode")), is("100"));
-        assertThat((String)(dataRecord.get("message")), is("OK"));
+        assertThat((String)(dataRecord.get("message")), is("🙀🙀🙀OK🙀🙀🙀"));
 
         LogVerifier.verify("messaging log assertion failed.");
         
