@@ -301,7 +301,10 @@ public class HttpMessagingClientTest {
         requestRecodeData = new TreeMap<String, Object>();
         requestRecodeData.put("requestId", "RM21AB0201");
         requestRecodeData.put("firstName", "太郎");
-        requestRecodeData.put("lastName", "ナブラ \n");
+        requestRecodeData.put("lastName", "ナブラ");
+        // サロゲートペア対応
+        requestRecodeData.put("surrogatepair", "🙀🙀🙀 \n");
+
         requestMessage.addDataRecord(requestRecodeData);
         reqHeaderRecord = new TreeMap<String, Object>();
         reqHeaderRecord.put("X-xx", null);//意地悪なデータとして、わざとnullを設定する。nullはフレームワーク側で空文字列に置換する。
@@ -342,7 +345,7 @@ public class HttpMessagingClientTest {
         
         LogVerifier.setExpectedLogMessages(
                 createExpectedLogMessages(
-                        "{\"requestId\":\"RM21AB0201\",\"firstName\":\"太郎\",\"lastName\":\"ナブラ \\n\"}",
+                        "{\"requestId\":\"RM21AB0201\",\"firstName\":\"太郎\",\"lastName\":\"ナブラ\",\"surrogatepair\":\"🙀🙀🙀 \\n\"}",
                         "POST http://localhost:8090/rm21ab0201",
                         "{\"messageCode\":\"100\", \"message\":\"OK\"}",
                         200));
@@ -350,7 +353,7 @@ public class HttpMessagingClientTest {
         reciveMessage = client.sendSync(settings, requestMessage);
         
         assertThat(client.getLastUri(), is("http://localhost:8090/rm21ab0201"));
-        assertThat(client.getLastBodyText(), is("{\"requestId\":\"RM21AB0201\",\"firstName\":\"太郎\",\"lastName\":\"ナブラ \\n\"}"));
+        assertThat(client.getLastBodyText(), is("{\"requestId\":\"RM21AB0201\",\"firstName\":\"太郎\",\"lastName\":\"ナブラ\",\"surrogatepair\":\"🙀🙀🙀 \\n\"}"));
         assertThat(client.getLastCharset(), is("UTF-8"));
         assertThat(client.getLastHttpMethod(), is(HttpRequestMethodEnum.POST));
         headerRecord = reciveMessage.getHeaderRecord();
@@ -437,6 +440,7 @@ public class HttpMessagingClientTest {
         1 requestId X
         2 firstName N
         3 lastName N
+        4 surrogatepair N
         *******/
         formatFile.deleteOnExit();
         
@@ -546,6 +550,8 @@ public class HttpMessagingClientTest {
         recodeData.put("requestId", "RM21AB0301");
         recodeData.put("firstName", "太郎");
         recodeData.put("lastName", "ナブラ");
+        // サロゲートペア対応
+        recodeData.put("surrogatepair", "🙀🙀🙀");
         requestMessage.addDataRecord(recodeData);
         settings = new MessageSenderSettings(requestMessage.getRequestId());
         //応答を差し替えるためにスタブをインスタンス化する。
@@ -577,7 +583,7 @@ public class HttpMessagingClientTest {
         
         LogVerifier.setExpectedLogMessages(
                 createExpectedLogMessages(
-                        "{\"requestId\":\"RM21AB0301\",\"firstName\":\"太郎\",\"lastName\":\"ナブラ\"}",
+                        "{\"requestId\":\"RM21AB0301\",\"firstName\":\"太郎\",\"lastName\":\"ナブラ\",\"surrogatepair\":\"🙀🙀🙀\"}",
                         "PUT http://localhost:8090/rm21ab0301",
                         "{\"messageCode\":\"100\", \"message\":\"OK\"}",
                         200));
@@ -585,7 +591,7 @@ public class HttpMessagingClientTest {
         reciveMessage = client.sendSync(settings, requestMessage);
         
         assertThat(client.getLastUri(), is("http://localhost:8090/rm21ab0301"));
-        assertThat(client.getLastBodyText(), is("{\"requestId\":\"RM21AB0301\",\"firstName\":\"太郎\",\"lastName\":\"ナブラ\"}"));
+        assertThat(client.getLastBodyText(), is("{\"requestId\":\"RM21AB0301\",\"firstName\":\"太郎\",\"lastName\":\"ナブラ\",\"surrogatepair\":\"🙀🙀🙀\"}"));
         assertThat(client.getLastCharset(), is("UTF-8"));
         assertThat(client.getLastHttpMethod(), is(HttpRequestMethodEnum.PUT));
         headerRecord = reciveMessage.getHeaderRecord();
@@ -620,6 +626,7 @@ public class HttpMessagingClientTest {
         1 requestId X
         2 firstName N
         3 lastName N
+        4 surrogatepair N
         *******/
         formatFile.deleteOnExit();
         

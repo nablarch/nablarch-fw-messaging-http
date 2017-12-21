@@ -236,6 +236,7 @@ public class HttpMessagingResponseBuildingHandlerTest {
           <user>
             <id>nablarch</id>
             <name>ナブラーク</name>
+            <surrogatepair>🙀🙀🙀</surrogatepair>
             <cno>1234567890123456</cno>
           </user>
         </request>
@@ -255,6 +256,7 @@ public class HttpMessagingResponseBuildingHandlerTest {
         [user]
         1 id            X
         2 name          X
+        3 surrogatepair X
         ****************************/
         requestFormatFile.deleteOnExit();
 
@@ -338,7 +340,8 @@ public class HttpMessagingResponseBuildingHandlerTest {
           }
           "user":{
             "id":"nablarch",
-            "name":"ナブラーク"
+            "name":"ナブラーク",
+            "surrogatepair":"🙀🙀🙀"
           }
         }
         ****************************/
@@ -357,6 +360,7 @@ public class HttpMessagingResponseBuildingHandlerTest {
         [user]
         1 id            X
         2 name          X
+        3 surrogatepair X
         ****************************/
         requestFormatFile.deleteOnExit();
 
