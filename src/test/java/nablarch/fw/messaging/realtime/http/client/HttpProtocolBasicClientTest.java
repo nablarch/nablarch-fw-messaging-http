@@ -1,5 +1,9 @@
 package nablarch.fw.messaging.realtime.http.client;
 
+import nablarch.core.exception.IllegalConfigurationException;
+import nablarch.core.repository.SystemRepository;
+import nablarch.core.repository.di.DiContainer;
+import nablarch.core.repository.di.config.xml.XmlComponentDefinitionLoader;
 import nablarch.core.util.StringUtil;
 import nablarch.fw.ExecutionContext;
 import nablarch.fw.messaging.MessagingException;
@@ -12,9 +16,10 @@ import nablarch.fw.messaging.realtime.http.streamio.CharHttpStreamWritter;
 import nablarch.fw.messaging.realtime.http.streamio.HttpInputStreamReader;
 import nablarch.fw.web.HttpRequest;
 import nablarch.fw.web.HttpResponse;
-import nablarch.fw.web.HttpServer;
+import nablarch.fw.web.HttpServerFactory;
 import nablarch.fw.web.servlet.HttpRequestWrapper;
 import nablarch.test.support.tool.Hereis;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -39,12 +44,37 @@ import static org.junit.Assert.fail;
 
 public class HttpProtocolBasicClientTest {
 
+    private static final String HTTP_SERVER_FACTORY_KEY = "httpServerFactory";
+
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        new HttpServer()
+        SystemRepository.clear();
+        setUpRepository("jetty-config.xml");
+        HttpServerFactory factory = SystemRepository.get(HTTP_SERVER_FACTORY_KEY);
+        if (factory == null) {
+            throw new IllegalConfigurationException("could not find component. name=[" + HTTP_SERVER_FACTORY_KEY + "].");
+        }
+        factory.create()
         .setPort(8766)
         .addHandler("/action/*.do", new RequestActions())
         .start();
+    }
+
+    @AfterClass
+    public static void tearDownClass() {
+        SystemRepository.clear();
+    }
+
+    /**
+     * リポジトリのセットアップをする。
+     *
+     * @param url 読み取るXMLのURL
+     */
+    private static void setUpRepository(String url) {
+        XmlComponentDefinitionLoader loader =
+                new XmlComponentDefinitionLoader(url);
+        DiContainer container = new DiContainer(loader);
+        SystemRepository.load(container);
     }
 
     /**
@@ -122,7 +152,8 @@ public class HttpProtocolBasicClientTest {
         urlParams = null;
         headerInfo = new HashMap<String, List<String>>();
         httpProtocolBasicClient = new HttpProtocolBasicClient();
-        
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.GET,
                 "http://localhost:8766/action/010.do", headerInfo, urlParams, null, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -134,6 +165,8 @@ public class HttpProtocolBasicClientTest {
         urlParams = new HashMap<String, String>();
         headerInfo = new HashMap<String, List<String>>();
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.GET,
                 "http://localhost:8766/action/010.do", headerInfo, urlParams, null, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -166,6 +199,8 @@ public class HttpProtocolBasicClientTest {
         headerInfo = new HashMap<String, List<String>>();
         httpProtocolBasicClient = new HttpProtocolBasicClient();
         httpProtocolBasicClient.setProxyInfo("localhost", 8766);
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.GET,
                 "http://localhost:8766/action/010.do", headerInfo, urlParams, null, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -177,6 +212,8 @@ public class HttpProtocolBasicClientTest {
         urlParams = null;
         headerInfo = new HashMap<String, List<String>>();
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.GET,
                 "http://localhost:8766/action/100.do", headerInfo, urlParams, null, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -219,6 +256,8 @@ public class HttpProtocolBasicClientTest {
         headerInfo = new HashMap<String, List<String>>();
         streamWriter = new CharHttpStreamWritter("UTF-8");
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.POST,
                 "http://localhost:8766/action/000.do", headerInfo, urlParams, streamWriter, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -232,6 +271,8 @@ public class HttpProtocolBasicClientTest {
         streamWriter = new CharHttpStreamWritter("UTF-8");
         streamWriter.append("テストPOST要求");
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.POST,
                 "http://localhost:8766/action/010.do", headerInfo, urlParams, streamWriter, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -245,6 +286,8 @@ public class HttpProtocolBasicClientTest {
         streamWriter = new CharHttpStreamWritter("UTF-8");
         streamWriter.append("テストPOST要求");
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.POST,
                 "http://localhost:8766/action/010.do", headerInfo, urlParams, streamWriter, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -260,6 +303,8 @@ public class HttpProtocolBasicClientTest {
         streamWriter = new CharHttpStreamWritter("MS932");
         streamWriter.append(requestBody);
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.POST,
                 "http://localhost:8766/action/201.do", headerInfo, urlParams, streamWriter, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -279,6 +324,8 @@ public class HttpProtocolBasicClientTest {
         streamWriter = new CharHttpStreamWritter("UTF-8");
         streamWriter.append(requestBody);
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.POST,
                 "http://localhost:8766/action/202.do", headerInfo, urlParams, streamWriter, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -294,6 +341,8 @@ public class HttpProtocolBasicClientTest {
         streamWriter = new CharHttpStreamWritter("MS932");
         streamWriter.append(requestBody);
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.POST,
                 "http://localhost:8766/action/203.do", headerInfo, urlParams, streamWriter, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -311,6 +360,8 @@ public class HttpProtocolBasicClientTest {
         streamWriter = new CharHttpStreamWritter("MS932");
         streamWriter.append(requestBody);
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.POST,
                 "http://localhost:8766/action/204.do", headerInfo, urlParams, streamWriter, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -352,6 +403,8 @@ public class HttpProtocolBasicClientTest {
         streamWriter = new CharHttpStreamWritter("UTF-8");
         streamWriter.append(requestBody);
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.POST,
                 "http://localhost:8766/action/205.do", headerInfo, urlParams, streamWriter, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -389,6 +442,8 @@ public class HttpProtocolBasicClientTest {
         streamWriter = new CharHttpStreamWritter("UTF-8");
         streamWriter.append(requestBody);
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.POST,
                 "http://localhost:8766/action/206.do", headerInfo, urlParams, streamWriter, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -408,6 +463,8 @@ public class HttpProtocolBasicClientTest {
         streamWriter = new CharHttpStreamWritter("UTF-8");
         streamWriter.append("テストPOST要求");
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.POST,
                 "http://localhost:8766/action/020.do", headerInfo, urlParams, streamWriter, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -419,6 +476,8 @@ public class HttpProtocolBasicClientTest {
         urlParams = null;
         headerInfo = new HashMap<String, List<String>>();
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.POST,
                 "http://localhost:8766/action/100.do", headerInfo, urlParams, streamWriter, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -432,6 +491,8 @@ public class HttpProtocolBasicClientTest {
         httpProtocolBasicClient = new HttpProtocolBasicClient();
         httpProtocolBasicClient.setReadTimeout(1);
         httpProtocolBasicClient.setConnectTimeout(1);
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         try{
             httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.POST,
                     "http://localhost:8766/action/110.do", headerInfo, urlParams, streamWriter, streamReader);
@@ -462,6 +523,8 @@ public class HttpProtocolBasicClientTest {
         streamWriter = new CharHttpStreamWritter("UTF-8");
         streamWriter.append("テストPUT要求");
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.PUT,
                 "http://localhost:8766/action/010.do", headerInfo, urlParams, streamWriter, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -475,6 +538,8 @@ public class HttpProtocolBasicClientTest {
         streamWriter = new CharHttpStreamWritter("UTF-8");
         streamWriter.append("テストPUT要求");
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.PUT,
                 "http://localhost:8766/action/010.do", headerInfo, urlParams, streamWriter, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -494,6 +559,8 @@ public class HttpProtocolBasicClientTest {
         streamWriter = new CharHttpStreamWritter("UTF-8");
         streamWriter.append("テストPUT要求");
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.PUT,
                 "http://localhost:8766/action/020.do", headerInfo, urlParams, streamWriter, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -505,6 +572,8 @@ public class HttpProtocolBasicClientTest {
         urlParams = null;
         headerInfo = new HashMap<String, List<String>>();
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.PUT,
                 "http://localhost:8766/action/100.do", headerInfo, urlParams, streamWriter, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -518,6 +587,8 @@ public class HttpProtocolBasicClientTest {
         httpProtocolBasicClient = new HttpProtocolBasicClient();
         httpProtocolBasicClient.setReadTimeout(1);
         httpProtocolBasicClient.setConnectTimeout(1);
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         try{
             httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.PUT,
                     "http://localhost:8766/action/110.do", headerInfo, urlParams, streamWriter, streamReader);
@@ -545,6 +616,8 @@ public class HttpProtocolBasicClientTest {
         urlParams = null;
         headerInfo = new HashMap<String, List<String>>();
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.DELETE,
                 "http://localhost:8766/action/010.do", headerInfo, urlParams, null, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -556,6 +629,8 @@ public class HttpProtocolBasicClientTest {
         urlParams = new HashMap<String, String>();
         headerInfo = new HashMap<String, List<String>>();
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.DELETE,
                 "http://localhost:8766/action/010.do", headerInfo, urlParams, null, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -573,6 +648,8 @@ public class HttpProtocolBasicClientTest {
         headerParamList.add("testval");
         headerInfo.put("x-Test", headerParamList);
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.DELETE,
                 "http://localhost:8766/action/020.do", headerInfo, urlParams, null, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -584,6 +661,8 @@ public class HttpProtocolBasicClientTest {
         urlParams = null;
         headerInfo = new HashMap<String, List<String>>();
         httpProtocolBasicClient = new HttpProtocolBasicClient();
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.DELETE,
                 "http://localhost:8766/action/100.do", headerInfo, urlParams, null, streamReader);
         assertNotNull(httpResult.getHeaderInfo().get(null).get(0));
@@ -597,6 +676,8 @@ public class HttpProtocolBasicClientTest {
         httpProtocolBasicClient = new HttpProtocolBasicClient();
         httpProtocolBasicClient.setReadTimeout(1);
         httpProtocolBasicClient.setConnectTimeout(1);
+        httpProtocolBasicClient.setAccept("text/plain");
+        httpProtocolBasicClient.setContentType("application/json");
         try{
             httpResult = httpProtocolBasicClient.execute(HttpRequestMethodEnum.DELETE,
                     "http://localhost:8766/action/110.do", headerInfo, urlParams, null, streamReader);
