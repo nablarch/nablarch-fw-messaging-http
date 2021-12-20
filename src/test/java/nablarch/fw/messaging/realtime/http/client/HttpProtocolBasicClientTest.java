@@ -99,7 +99,9 @@ public class HttpProtocolBasicClientTest {
                     "http:://localhost:8766/action/010.do", headerInfo, null, null, null);
             fail();
         } catch (Exception e) {
-            assertThat(e.getClass().getName(), is(RuntimeException.class.getName()));
+            // Java 14 でJDKの内部実装が変わりスローされる例外が変化したことに対応するため、実行時の Java のバージョンによって期待する例外を切り替えている
+            Class<?> expectedException = isJava14OrLater() ? HttpMessagingException.class : RuntimeException.class;
+            assertThat(e.getClass().getName(), is(expectedException.getName()));
         }
         // スキームの後ろの/を多く
         try {
@@ -107,7 +109,9 @@ public class HttpProtocolBasicClientTest {
                     "http:///localhost:8766/action/010.do", headerInfo, null, null, null);
             fail();
         } catch (Exception e) {
-            assertThat(e.getClass().getName(), is(RuntimeException.class.getName()));
+            // Java 14 でJDKの内部実装が変わりスローされる例外が変化したことに対応するため、実行時の Java のバージョンによって期待する例外を切り替えている
+            Class<?> expectedException = isJava14OrLater() ? HttpMessagingException.class : RuntimeException.class;
+            assertThat(e.getClass().getName(), is(expectedException.getName()));
         }
         // 不正なホスト名
         try {
@@ -132,6 +136,20 @@ public class HttpProtocolBasicClientTest {
             fail();
         } catch (Exception e) {
             assertThat(e.getClass().getName(), is(HttpMessagingException.class.getName()));
+        }
+    }
+
+    /**
+     * 実行環境の JVM のバージョンが 14 以上であるかどうか判定する。
+     * @return Java 14 以上で実行されている場合は true
+     */
+    private static boolean isJava14OrLater() {
+        try {
+            // Java 14 で追加された API があるかどうかで、 Java 14 以上かどうかを判断する
+            Class.forName("jdk.jfr.consumer.RecordingStream");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
         }
     }
     
