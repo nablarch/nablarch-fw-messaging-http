@@ -1,15 +1,28 @@
 package nablarch.fw.web.servlet;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletConnection;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpUpgradeHandler;
+import jakarta.servlet.http.Part;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
@@ -78,6 +91,11 @@ public class MockServletRequest implements HttpServletRequest {
         return contentLength;
     }
 
+    @Override
+    public long getContentLengthLong() {
+        throw new UnsupportedOperationException();
+    }
+
     private int contentLength = -1;
 
     public void setContentLength(int contentLength) {
@@ -119,6 +137,21 @@ public class MockServletRequest implements HttpServletRequest {
             public int available() throws IOException {
                 return in.available();
             }
+
+            @Override
+            public boolean isFinished() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public boolean isReady() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setReadListener(ReadListener readListener) {
+                throw new UnsupportedOperationException();
+            }
         };
     }
     /**
@@ -139,6 +172,56 @@ public class MockServletRequest implements HttpServletRequest {
      * {@inheritDoc}
      */
     public int getLocalPort() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ServletContext getServletContext() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public AsyncContext startAsync() throws IllegalStateException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isAsyncStarted() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isAsyncSupported() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public AsyncContext getAsyncContext() {
+        return null;
+    }
+
+    @Override
+    public DispatcherType getDispatcherType() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getRequestId() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getProtocolRequestId() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ServletConnection getServletConnection() {
         throw new UnsupportedOperationException();
     }
 
@@ -452,6 +535,11 @@ public class MockServletRequest implements HttpServletRequest {
         return session;
     }
 
+    @Override
+    public String changeSessionId() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -477,6 +565,36 @@ public class MockServletRequest implements HttpServletRequest {
      * {@inheritDoc}
      */
     public boolean isRequestedSessionIdFromURL() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void login(String username, String password) throws ServletException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void logout() throws ServletException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Collection<Part> getParts() throws IOException, ServletException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Part getPart(String name) throws IOException, ServletException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
         throw new UnsupportedOperationException();
     }
 
