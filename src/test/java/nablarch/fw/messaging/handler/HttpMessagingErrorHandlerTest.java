@@ -10,7 +10,7 @@ import nablarch.fw.web.servlet.ServletExecutionContext;
 import nablarch.test.support.log.app.OnMemoryLogWriter;
 import org.junit.Test;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;

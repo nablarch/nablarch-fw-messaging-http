@@ -20,91 +20,9 @@
     <version>6-NEXT-SNAPSHOT</version>
   </parent>
 
-  <profiles>
-    <profile>
-      <!-- Java11以外ではテストにjetty6を使用する。 -->
-      <id>default</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>
-        <!-- JDKごとのリソースディレクトリ(プロファイルにより切り替わる) -->
-        <env.resources>${project.basedir}/src/env/jetty6/resources</env.resources>
-      </properties>
-      <dependencies>
-        <dependency>
-          <groupId>com.nablarch.framework</groupId>
-          <artifactId>nablarch-testing-jetty6</artifactId>
-          <!--
-            最終的には jetty11 に対応したアーティファクトに切り替えてバージョンは bom で管理する。
-            ここでバージョンを明記しているのは CI を通すための一次的な処置。
-          -->
-          <version>5-NEXT-SNAPSHOT</version>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>javax.servlet</groupId>
-          <artifactId>servlet-api</artifactId>
-          <version>2.5</version>
-          <scope>provided</scope>
-        </dependency>
-        <dependency>
-          <groupId>javax.servlet.jsp</groupId>
-          <artifactId>jsp-api</artifactId>
-          <version>2.1</version>
-          <scope>provided</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>java11</id>
-      <properties>
-        <env.resources>${project.basedir}/src/env/jetty9/resources</env.resources>
-        
-      </properties>
-      <dependencies>
-        <dependency>
-          <groupId>com.nablarch.framework</groupId>
-          <artifactId>nablarch-testing-jetty9</artifactId>
-          <!--
-            最終的には jetty11 に対応したアーティファクトに切り替えてバージョンは bom で管理する。
-            ここでバージョンを明記しているのは CI を通すための一次的な処置。
-          -->
-          <version>5-NEXT-SNAPSHOT</version>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>javax.activation</groupId>
-          <artifactId>activation</artifactId>
-          <version>1.1.1</version>
-        </dependency>
-        <dependency>
-          <groupId>javax.servlet</groupId>
-          <artifactId>javax.servlet-api</artifactId>
-          <version>3.1.0</version>
-          <scope>provided</scope>
-        </dependency>
-        <dependency>
-          <groupId>javax.servlet.jsp</groupId>
-          <artifactId>javax.servlet.jsp-api</artifactId>
-          <version>2.3.3</version>
-          <scope>provided</scope>
-        </dependency>
-      </dependencies>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <!-- MANIFEST.MFでClass-Pathを指定すると、依存jar内で定義されているtaglibのuriを正しく解決してくれない。 -->
-              <useManifestOnlyJar>false</useManifestOnlyJar>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
+  <properties>
+    <jetty.version>jetty12</jetty.version>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -118,9 +36,19 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>jakarta.activation</groupId>
+      <artifactId>jakarta.activation-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>jakarta.servlet.jsp</groupId>
+      <artifactId>jakarta.servlet.jsp-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -142,6 +70,12 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>com.nablarch.framework</groupId>
+      <artifactId>nablarch-testing-${jetty.version}</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
  
   <build>
@@ -154,8 +88,19 @@
         <directory>src/test/java</directory>
       </testResource>
       <testResource>
-        <directory>${env.resources}</directory>
+        <directory>${project.basedir}/src/env/${jetty.version}/resources</directory>
       </testResource>
     </testResources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- MANIFEST.MFでClass-Pathを指定すると、依存jar内で定義されているtaglibのuriを正しく解決してくれない。 -->
+          <useManifestOnlyJar>false</useManifestOnlyJar>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>
