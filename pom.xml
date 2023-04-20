@@ -59,12 +59,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.jmockit</groupId>
-      <artifactId>jmockit</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>com.nablarch.dev</groupId>
       <artifactId>nablarch-test-support</artifactId>
       <scope>test</scope>
